@@ -1,0 +1,21 @@
+{
+  "name": "mini-tree-react",
+  "version": "1.0.0",
+  "description": "Simple tree component for react.js",
+  "main": "mini-tree-react.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "author": "Andrey Yurzanov",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.0"
+  }
+}

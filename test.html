@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style>
+          .mini-react-tree {
+              padding: 0;
+              list-style: none;
+              margin-left: 25px;
+              border-left: 0.5px solid #ccc;
+          }
+          .mini-react-tree-item-behavior {
+              display: block;
+              line-height: 14px;
+              padding: 15px 0px 15px 25px;
+              cursor: default;
+          }
+          .mini-react-tree-item {    
+              overflow: hidden;
+              position: relative;
+          }
+          .mini-react-tree-item.expanded .mini-react-tree-items {
+            display: none;
+          }
+          .mini-react-tree-item:before {    
+              top: 22px;
+              width: 15px;
+              content: ' ';
+              position: absolute;
+              display: inline-block;
+              border: 0.5px solid #ccc;
+          }
+          .mini-react-tree-items {
+              padding: 0;
+              list-style: none;
+              margin-left: 25px;
+              border-left: 0.5px solid #ccc;
+          }          
+      </style>        
+    </head>
+    <body>
+         
+        <div id="root">
+        </div>
+        
+        <script src="mini-tree-react.js"></script>
+    </body>
+</html>
