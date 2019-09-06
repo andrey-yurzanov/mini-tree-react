@@ -19,6 +19,18 @@ const buildItems = (expandModel, parent, items, conf) => {
   }
 };
 
+const buildChildren = (parent, conf, expandModal, childrenModel) => {
+  const children = childrenModel.apply(conf, [ parent, conf ]);
+  return children.map((child, index) => {
+    if (parent && parent._treeIndex) {
+      child = child._treeIndex = parent._treeIndex + index;
+    } else {
+      child._treeIndex = index + '';
+    }
+    return null;
+  });
+};
+
 export default class Tree extends React.Component {
   constructor(props) {
     super(props);
@@ -32,6 +44,10 @@ export default class Tree extends React.Component {
       (items) => this.setState({ items: items }), 
       this.props.items 
     ]);
+
+    const childrenModel = conf.childrenModel;
+    
+
     return (<ul className='mini-react-tree'>
               { buildItems(expand, null, this.props.items, conf.children) }
             </ul>);

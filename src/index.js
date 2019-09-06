@@ -3,14 +3,7 @@ import ReactDOM from 'react-dom';
 import Tree from './components/tree.js';
 import { single } from './components/single-expand-model.js';
 import { multi } from './components/multi-expand-model.js';
-
-const conf = {
-  expandModel: multi,
-  children: {
-    title: 'name',
-    children: 'items'
-  }
-};
+import { children } from './components/children-model.js';
 
 const items = [
   {
@@ -41,4 +34,13 @@ const items = [
   }
 ];
 
-ReactDOM.render((<Tree conf={ conf } items={ items } />), document.getElementById('root'));
+const conf = {
+  expandModel: multi,
+  childrenModel: children(items),
+
+  child: {
+    title: 'name'
+  }
+};
+
+ReactDOM.render((<Tree conf={ conf } />), document.getElementById('root'));
