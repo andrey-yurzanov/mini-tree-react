@@ -14,10 +14,10 @@ const globalRules = [
 const globalMode = 'development';
 module.exports = [
   {
-    entry: path.resolve(__dirname, './src/mini-tree-react.js'),
+    entry: path.resolve(__dirname, './src/index.js'),
     output: {
       path: path.resolve(__dirname, './'),
-      filename: 'index.js'
+      filename: 'mini-tree-react.js'
     },
     module: {
       rules: globalRules

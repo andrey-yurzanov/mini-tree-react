@@ -1,6 +1,5 @@
 import React from 'react';
 import TreeItem from './tree-item';
-import {single} from "./single-expand-model";
 
 const buildItems = (expandModel, parent, items, conf) => {
   if (items) {
@@ -27,11 +26,14 @@ export default class Tree extends React.Component {
   }
   
   render() {
+    const conf = this.props.conf;
+    const expandModel = conf.expandModel;
+    const expand = expandModel.apply(expandModel, [ 
+      (items) => this.setState({ items: items }), 
+      this.props.items 
+    ]);
     return (<ul className='mini-react-tree'>
-              { buildItems(single((items) => { this.setState({ items: items }) }, this.props.items),
-                           null,
-                           this.props.items,
-                           this.props.conf.items) }
+              { buildItems(expand, null, this.props.items, conf.children) }
             </ul>);
   }
 }
