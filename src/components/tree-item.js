@@ -25,25 +25,31 @@ const span = (result) => {
   return result;
 };
 
+/**
+ *  Tree element realization
+ *  @author Andrey Yurzanov 
+ */
 export default class TreeItem extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { item: this.props.item }
   }
 
   render() {  
     const conf = this.props.conf;
     const item = this.props.item;
     const index = this.props.index;
-    const buildItems = this.props.buildItems;
-    const expand = () => { item.items ? this.props.expandModel.apply(conf, [ item ]) : null };
+    const expand = this.props.expand;
+    const resolve = this.props.resolve;
+    const onClick = () => this.setState({ item: expand.apply(conf, [ item ]) });
     return (<li className={ 'mini-react-tree-item' }>
               <div>
-                <span className='mini-react-tree-item-behavior' onClick={ expand }>
+                <span className='mini-react-tree-item-behavior' onClick={ onClick }>
                   { i(build(item, index, conf, 'icon')) }
                   { span(build(item, index, conf, 'title')) }                
                 </span>
                 <ul className='mini-react-tree-items'>
-                  { item.expanded ? buildItems(this.props.expandModel, item, item.items, conf) : null }
+                  { item.expanded ? this.props.buildChildren(item, conf, expand, resolve) : null }
                 </ul>  
               </div> 
             </li>);

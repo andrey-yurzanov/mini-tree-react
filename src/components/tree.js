@@ -1,55 +1,47 @@
 import React from 'react';
 import TreeItem from './tree-item';
 
-const buildItems = (expandModel, parent, items, conf) => {
-  if (items) {
-    return items.map((item, index) => {
-      if (parent) {
-        item._treeIndex = parent._treeIndex + index;
+// For children building
+const buildChildren = (parent, conf, expand, resolve) => {
+  const children = resolve.apply(conf, [ parent, conf ]);
+  if (children) {
+    return children.map((child, index) => {
+      if (parent && parent._treeIndex) {
+        child._treeIndex = parent._treeIndex + index;
       } else {
-        item._treeIndex = index + '';
+        child._treeIndex = index + '';
       }
-      return (<TreeItem expandModel={ expandModel }
-                        parent={ parent }
-                        item={ item }
-                        index={ index } 
-                        conf={ conf } 
-                        buildItems={ buildItems } />);
+
+      return (<TreeItem parent={ parent }
+                        item={ child }
+                        index={ index }
+                        buildChildren={ buildChildren }
+                        conf={ conf }
+                        expand={ expand }
+                        resolve={ resolve } />);
     });
   }
+  return [];
 };
 
-const buildChildren = (parent, conf, expandModal, childrenModel) => {
-  const children = childrenModel.apply(conf, [ parent, conf ]);
-  return children.map((child, index) => {
-    if (parent && parent._treeIndex) {
-      child = child._treeIndex = parent._treeIndex + index;
-    } else {
-      child._treeIndex = index + '';
-    }
-    return null;
-  });
-};
-
+/**
+ *  Tree realization
+ *  @author Andrey Yurzanov 
+ */
 export default class Tree extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { items: this.props.items }
   }
   
   render() {
     const conf = this.props.conf;
-    const expandModel = conf.expandModel;
-    const expand = expandModel.apply(expandModel, [ 
-      (items) => this.setState({ items: items }), 
-      this.props.items 
-    ]);
-
-    const childrenModel = conf.childrenModel;
-    
-
     return (<ul className='mini-react-tree'>
-              { buildItems(expand, null, this.props.items, conf.children) }
+              { buildChildren(
+                  conf, 
+                  conf.child,
+                  conf.expand.apply(conf, [ conf ]),                    
+                  conf.resolve
+                ) }
             </ul>);
   }
 }

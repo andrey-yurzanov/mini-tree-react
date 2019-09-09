@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Tree from './components/tree.js';
-import { single } from './components/single-expand-model.js';
-import { multi } from './components/multi-expand-model.js';
-import { children } from './components/children-model.js';
+import { fieldResolve } from './components/field-resolve.js';
+import { multi } from './components/multi-expand.js'; 
 
 const items = [
   {
@@ -35,12 +34,15 @@ const items = [
 ];
 
 const conf = {
-  expandModel: multi,
-  childrenModel: children(items),
+  expand: multi,
+  resolve: fieldResolve,
 
   child: {
-    title: 'name'
-  }
+    title: 'name',
+    children: 'items'
+  },
+
+  items: items
 };
 
 ReactDOM.render((<Tree conf={ conf } />), document.getElementById('root'));
