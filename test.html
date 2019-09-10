@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <link rel="stylesheet" href="fontawesome-free-5.9.0-web/css/all.min.css">
         <style>
           .mini-react-tree {
               padding: 0;
@@ -15,9 +16,31 @@
               padding: 15px 0px 15px 25px;
               cursor: default;
           }
+          .mini-react-tree-item-behavior:hover {
+              color: rgb(99, 122, 156);
+              cursor: pointer;
+          }
+          .mini-react-tree-item-behavior:hover .mini-react-tree-item-icon {
+              color: rgb(99, 122, 156);
+              cursor: pointer;
+          }
+          .mini-react-tree-item-behavior:hover .mini-react-tree-item-behavior-icon {
+              color: rgb(99, 122, 156);
+              cursor: pointer;
+          }                    
           .mini-react-tree-item {    
               overflow: hidden;
               position: relative;
+          }
+          .mini-react-tree-item-icon {
+              margin-right: 5px;
+              color: #ccc;
+              font-size: 0.9;              
+          }
+          .mini-react-tree-item-behavior-icon {
+              margin-left: 5px;
+              color: #ccc;
+              font-size: 0.5;
           }
           .mini-react-tree-item.expanded .mini-react-tree-items {
             display: none;

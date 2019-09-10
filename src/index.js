@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Tree from './components/tree.js';
-import { fieldResolve } from './components/field-resolve.js';
+import { field } from './components/field-resolve.js';
 import { multi } from './components/multi-expand.js'; 
+import { single } from './components/single-expand.js';
 
 const items = [
   {
@@ -34,12 +35,15 @@ const items = [
 ];
 
 const conf = {
-  expand: multi,
-  resolve: fieldResolve,
+  expand: single,
+  resolve: field,
 
   child: {
+    icon: () => (<i className="fas fa-folder"></i>),
     title: 'name',
-    children: 'items'
+    children: 'items',
+    behaviorExpanded: () => (<i className='far fa-minus-square'></i>),
+    behaviorCollapsed: () => (<i className='far fa-plus-square'></i>)
   },
 
   items: items

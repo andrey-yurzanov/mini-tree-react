@@ -1,6 +1,11 @@
+/**
+ *  For multi expanding
+ *  @param conf tree configuration
+ *  @author Andrey yurzanov 
+ */
 export const multi = (conf) => {
-  return (item) => { 
+  return (item, expand) => { 
     item.expanded = !item.expanded;
-    return item;
+    expand.apply(item, [ item ]);    
   };
 }; 

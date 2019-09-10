@@ -15,6 +15,7 @@ const buildChildren = (parent, conf, expand, resolve) => {
       return (<TreeItem parent={ parent }
                         item={ child }
                         index={ index }
+                        hasChildren={ (item) => resolve.apply(conf, [ item, conf ]) }
                         buildChildren={ buildChildren }
                         conf={ conf }
                         expand={ expand }
