@@ -35,7 +35,7 @@ export default class TreeItem extends React.Component {
                      span(build(item, index, conf, item.expanded ? 'behaviorExpanded' : 'behaviorCollapsed'), 'mini-react-tree-item-behavior-icon') : 
                      null;
     const click = () => expand.apply(conf, [ item, (item) => this.setState({ item: item }) ]);
-    return (<li className={ 'mini-react-tree-item' }>
+    return (<li className='mini-react-tree-item'>
               <div>
                 <span className='mini-react-tree-item-behavior' onClick={ click }>
                   { span(build(item, index, conf, 'icon'), 'mini-react-tree-item-icon') }
