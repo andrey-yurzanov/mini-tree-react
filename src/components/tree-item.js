@@ -1,5 +1,39 @@
 import React from 'react';
 
+// For click handler building
+const buildClick = (conf, hasChildren, owner) => {
+  if (conf.listen) {
+    return (item) => {
+      owner.setState({item: item});
+
+      const event = {
+        item: item,
+        childConf: conf
+      };
+      if (hasChildren) {
+        item.expanded ? call(conf.listen, 'expand', event) :
+                        call(conf.listen, 'collapse', event);
+      } else {
+        call(conf.listen, 'click', event);
+      }
+    };
+  }
+  return (item) => this.setState({ item: item });
+};
+// For behavior building
+const buildBehavior = (conf, item, index, hasChildren) => {
+  const expandClass = item.expanded ? 'behaviorExpanded' : 'behaviorCollapsed';
+  return hasChildren ?
+    span(build(
+      item,
+      index,
+      conf,
+      expandClass
+    ),
+    'mini-react-tree-item-behavior-icon'
+  ) : null;
+};
+
 // For item element building
 const build = (item, index, conf, confName) => {
   const type = (typeof conf[confName]);
@@ -13,6 +47,21 @@ const build = (item, index, conf, confName) => {
 // For <span> tag building
 const span = (result, className) => {
   return (<span className={ className }>{ result }</span>);
+};
+// For listener calling
+const call = (listenConf, name, event) => {
+  let handle = null;
+  const type = (typeof listenConf[name]);
+  if (type == 'string' || type == 'number') {
+    handle = event.item[listenConf[name]];
+  } else if (type == 'function') {
+    handle = listenConf[name];
+  }
+
+  // If listener was found
+  if (handle) {
+    handle.apply(listenConf, [ name, event ]);
+  }
 };
 
 /**
@@ -31,13 +80,13 @@ export default class TreeItem extends React.Component {
     const index = this.props.index;
     const expand = this.props.expand;
     const resolve = this.props.resolve;
-    const behavior = this.props.hasChildren(item, conf) ? 
-                     span(build(item, index, conf, item.expanded ? 'behaviorExpanded' : 'behaviorCollapsed'), 'mini-react-tree-item-behavior-icon') : 
-                     null;
-    const click = () => expand.apply(conf, [ item, (item) => this.setState({ item: item }) ]);
+
+    const hasChildren = this.props.hasChildren(item, conf);
+    const behavior = buildBehavior(conf, item, index, hasChildren);
+    const click = buildClick(conf, hasChildren, this);
     return (<li className='mini-react-tree-item'>
               <div>
-                <span className='mini-react-tree-item-behavior' onClick={ click }>
+                <span className='mini-react-tree-item-behavior' onClick={ () => expand.apply(conf, [ item, click ]) }>
                   { span(build(item, index, conf, 'icon'), 'mini-react-tree-item-icon') }
                   { span(build(item, index, conf, 'title'), 'mini-react-tree-item-title') }
                   { behavior }                

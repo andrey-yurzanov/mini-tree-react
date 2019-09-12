@@ -33,7 +33,7 @@ const children = [
     ]    
   }
 ];
-
+const handle = (name, event) => { console.log(name); console.log(event); };
 const conf = {
   expand: single,
   resolve: param(children),
@@ -42,7 +42,13 @@ const conf = {
     icon: () => (<i className="fas fa-folder"></i>),
     title: 'name',
     behaviorExpanded: () => (<i className='far fa-minus-square'></i>),
-    behaviorCollapsed: () => (<i className='far fa-plus-square'></i>)
+    behaviorCollapsed: () => (<i className='far fa-plus-square'></i>),
+
+    listen: {
+      expand: handle,
+      collapse: handle,
+      click: handle
+    }
   },
 };
 
