@@ -1,17 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Tree from './components/tree.js';
-import { field } from './components/field-resolve.js';
+import { param } from './components/resolve.js';
 import { multi } from './components/multi-expand.js'; 
 import { single } from './components/single-expand.js';
 
-const items = [
+const children = [
   {
     name: 'item-1',
-    items: [
+    children: [
       {
         name: 'subitem-1.1',
-        items: [
+        children: [
           {
             name: 'subitem-1.1.1'
           }
@@ -21,10 +21,10 @@ const items = [
   },
   {
     name: 'item-2',
-    items: [
+    children: [
       {
         name: 'subitem-2.1',
-        items: [
+        children: [
           {
             name: 'subitem-2.1.1'
           }
@@ -36,17 +36,14 @@ const items = [
 
 const conf = {
   expand: single,
-  resolve: field,
+  resolve: param(children),
 
   child: {
     icon: () => (<i className="fas fa-folder"></i>),
     title: 'name',
-    children: 'items',
     behaviorExpanded: () => (<i className='far fa-minus-square'></i>),
     behaviorCollapsed: () => (<i className='far fa-plus-square'></i>)
   },
-
-  items: items
 };
 
 ReactDOM.render((<Tree conf={ conf } />), document.getElementById('root'));

@@ -15,3 +15,20 @@ export const field = (parent, childConf) => {
   }
   return parent[RESOLVE_FIELD];
 };
+
+/**
+ *  Resolve children by param
+ *  @author Andrey Yurzanov
+ *  @param children tree children
+ */
+export const param = (children) => {
+  return (parent, childConf) => {
+    if (parent._treeIndex) {
+      if (childConf.children) {
+        return parent[childConf.children];
+      }
+      return parent[RESOLVE_FIELD]; 
+    }
+    return children;
+  };
+};
