@@ -1,7 +1,7 @@
 /**
  *  For multi expanding
  *  @param conf tree configuration
- *  @author Andrey yurzanov 
+ *  @author Andrey Yurzanov 
  */
 export const multi = (conf) => {
   return (item, expand) => { 

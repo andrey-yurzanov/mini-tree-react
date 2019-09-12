@@ -1,13 +1,13 @@
 /**
  *  For single expanding
  *  @param conf tree configuration
- *  @author Andrey yurzanov 
+ *  @author Andrey Yurzanov 
  */
 export const single = (conf) => {
-  let items = [];
+  let items = new Map();
   return (item, expand) => {
-    if (items.length) {
-      for (const prev of items) {
+    if (items.size) {
+      for (const prev of items.values()) {        
         if (!item._treeIndex.startsWith(prev.item._treeIndex) && prev.item.expanded) {
           prev.item.expanded = false;
           prev.expand.apply(prev, [ prev.item ]);
@@ -17,6 +17,6 @@ export const single = (conf) => {
     item.expanded = !item.expanded;
     expand.apply(item, [ item ]);
 
-    items.push({ item: item, expand: expand }); 
+    items.set(item._treeIndex, { item: item, expand: expand }); 
   };
 };
