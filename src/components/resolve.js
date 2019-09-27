@@ -9,7 +9,7 @@ export const RESOLVE_FIELD = 'children';
  *  @param parent object who contains children field
  *  @param childConf tree child configuration
  */
-export const field = (parent, childConf) => {
+export const field = () => (parent, childConf) => {
   if (childConf.children) {
     return parent[childConf.children];
   }
@@ -24,7 +24,7 @@ export const field = (parent, childConf) => {
 export const param = (children) => {
   return (parent, childConf) => {
     if (parent._treeIndex) {
-      if (childConf.children) {
+      if (childConf && childConf.children) {
         return parent[childConf.children];
       }
       return parent[RESOLVE_FIELD]; 

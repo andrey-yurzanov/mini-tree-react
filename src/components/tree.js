@@ -1,5 +1,7 @@
 import React from 'react';
 import TreeItem from './tree-item';
+import { param } from './resolve';
+import { single } from './expand.js';
 
 // For children building
 const buildChildren = (parent, conf, expand, resolve) => {
@@ -12,7 +14,8 @@ const buildChildren = (parent, conf, expand, resolve) => {
         child._treeIndex = index + '';
       }
 
-      return (<TreeItem parent={ parent }
+      return (<TreeItem key={ 'tree-item-' + child._treeIndex } 
+                        parent={ parent }
                         item={ child }
                         index={ index }
                         hasChildren={ (item) => resolve.apply(conf, [ item, conf ]) }
@@ -29,14 +32,14 @@ const buildChildren = (parent, conf, expand, resolve) => {
  *  Tree realization
  *  @author Andrey Yurzanov 
  */
-export default class Tree extends React.Component {
+export class Tree extends React.Component {
   constructor(props) {
     super(props);
   }
   
   render() {
     const conf = this.props.conf;
-    return (<ul className='mini-react-tree'>
+    return (<ul className='mini-tree'>
               { buildChildren(
                   conf, 
                   conf.child,
@@ -46,3 +49,18 @@ export default class Tree extends React.Component {
             </ul>);
   }
 }
+
+/**
+ *  Default configuration
+ *  @param children tree's items
+ *  @returns default tree configuration
+ */
+export const defConf = (children) => {
+  return {
+    expand: single,
+    resolve: param(children),
+    child: {
+      title: 'title'
+    }
+  };
+};

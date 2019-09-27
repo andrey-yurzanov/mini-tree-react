@@ -18,7 +18,7 @@ const buildClick = (conf, hasChildren, owner) => {
       }
     };
   }
-  return (item) => this.setState({ item: item });
+  return (item) => owner.setState({ item: item });
 };
 // For behavior building
 const buildBehavior = (conf, item, index, hasChildren) => {
@@ -30,7 +30,7 @@ const buildBehavior = (conf, item, index, hasChildren) => {
       conf,
       expandClass
     ),
-    'mini-react-tree-item-behavior-icon'
+    'mini-tree-item-behavior-icon'
   ) : null;
 };
 
@@ -84,17 +84,17 @@ export default class TreeItem extends React.Component {
     const hasChildren = this.props.hasChildren(item, conf);
     const behavior = buildBehavior(conf, item, index, hasChildren);
     const click = buildClick(conf, hasChildren, this);
-    return (<li className='mini-react-tree-item'>
-              <div>
-                <span className='mini-react-tree-item-behavior' onClick={ () => expand.apply(conf, [ item, click ]) }>
-                  { span(build(item, index, conf, 'icon'), 'mini-react-tree-item-icon') }
-                  { span(build(item, index, conf, 'title'), 'mini-react-tree-item-title') }
-                  { behavior }                
-                </span>
-                <ul className='mini-react-tree-items'>
-                  { item.expanded ? this.props.buildChildren(item, conf, expand, resolve) : null }
-                </ul>  
-              </div> 
+    return (<li key={ 'tree-item-key-' + item._treeIndex } className='mini-tree-item'>
+              <React.Fragment>
+                <span className='mini-tree-item-behavior' onClick={ () => expand.apply(conf, [ item, click ]) }>
+                    { span(build(item, index, conf, 'icon'), 'mini-tree-item-icon') }
+                    { span(build(item, index, conf, 'title'), 'mini-tree-item-title') }
+                    { behavior }                
+                  </span>
+                  <ul className='mini-tree-items'>
+                    { item.expanded ? this.props.buildChildren(item, conf, expand, resolve) : null }
+                  </ul>
+              </React.Fragment>
             </li>);
   }
 }
