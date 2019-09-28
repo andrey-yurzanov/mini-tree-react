@@ -1,23 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Tree, defConf } from './components/tree.js';
-import { param } from './components/resolve.js';
-import { multi } from './components/expand.js'; 
-import { single } from './components/expand.js';
+import { Tree, defConf } from './components/tree';
 import 'babel-polyfill';
 
-const createChildren = (count, depth) => {
-  if (depth > 0) {
-    const children = [];
-    for (let i = 0; i < count; i++) {
-      children.push({
-        title: 'item-' + depth + '-' + i,
-        children: createChildren(count, depth - 1)     
-      });
-    }
-    return children;
+const children = [
+  {
+    title: 'Item-1',
+    children: [
+      {
+        title: 'Subitem-1-1'
+      },
+      {
+        title: 'Subitem-1-2'
+      }        
+    ]
+  },
+  {
+    title: 'Item-2',
+    children: [
+      {
+        title: 'Subitem-2-1'
+      },
+      {
+        title: 'Subitem-2-2'
+      }         
+    ]
   }
-};
-const conf = defConf(createChildren(2, 2));
+];
+const conf = defConf(children);
 
-ReactDOM.render((<Tree conf={ conf } />), document.getElementById('root'));
+const root = document.getElementById('root');
+ReactDOM.render((<Tree conf={ conf } />), root);

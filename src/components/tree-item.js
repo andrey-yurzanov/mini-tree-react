@@ -37,7 +37,7 @@ const buildBehavior = (conf, item, index, hasChildren) => {
 // For item element building
 const build = (item, index, conf, confName) => {
   const type = (typeof conf[confName]);
-  if (type == 'string' || type == 'number') {
+  if (type == 'string') {
     return item[conf[confName]];
   } else if (type == 'function') {
     return conf[confName].apply(conf, [ item, index, conf ]);
@@ -52,7 +52,7 @@ const span = (result, className) => {
 const call = (listenConf, name, event) => {
   let handle = null;
   const type = (typeof listenConf[name]);
-  if (type == 'string' || type == 'number') {
+  if (type == 'string') {
     handle = event.item[listenConf[name]];
   } else if (type == 'function') {
     handle = listenConf[name];
