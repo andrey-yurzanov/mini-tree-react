@@ -1,14 +1,20 @@
 {
   "name": "mini-tree-react",
   "version": "1.0.0",
-  "description": "Simple tree component for react.js",
-  "main": "mini-tree-react.js",
+  "description": "Simple tree view realization for react.js",
+  "main": "./dist/index.js",
   "scripts": {
     "build": "webpack",
     "test": "jest"
   },
   "author": "Andrey Yurzanov",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrey-yurzanov/mini-tree-react.git"
+  },  
+  "homepage": "https://github.com/andrey-yurzanov/mini-tree-react",
+  "bugs": "https://github.com/andrey-yurzanov/mini-tree-react/issues",
   "devDependencies": {
     "@babel/core": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
