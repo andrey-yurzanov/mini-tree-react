@@ -15,6 +15,10 @@
   },  
   "homepage": "https://github.com/andrey-yurzanov/mini-tree-react",
   "bugs": "https://github.com/andrey-yurzanov/mini-tree-react/issues",
+  "peerDependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
@@ -30,5 +34,18 @@
     "react-test-renderer": "^16.9.0",
     "webpack": "^4.30.0",
     "webpack-cli": "^3.3.0"
-  }
+  },
+  "keywords": [
+    "react",
+    "tree",
+    "tree-view",
+    "tree-component",
+    "react-component"
+  ],
+  "tags": [
+    "react",
+    "tree",
+    "tree-view",
+    "tree-component"    
+  ]
 }
