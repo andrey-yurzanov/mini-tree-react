@@ -35,20 +35,42 @@ const buildChildren = (parent, conf, expand, resolve) => {
 export class Tree extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { conf: this.props.conf };
+
+    this.updateConf = this.updateConf.bind(this);
   }
-  
+
   render() {
     const conf = this.props.conf;
-    return (<ul className='mini-tree'>
-              { buildChildren(
-                  conf, 
-                  conf.child,
-                  conf.expand.apply(conf, [ conf ]),                    
-                  conf.resolve
-                ) }
-            </ul>);
+    if (conf) {
+      conf._updateConf = this.updateConf;
+      return (<ul className='mini-tree'>
+        { buildChildren(
+          conf,
+          conf.child,
+          conf.expand.apply(conf, [ conf ]),
+          conf.resolve
+        ) }
+      </ul>);
+    }
+    return (<ul className='mini-tree' />);
+  }
+
+  /**
+   *  For configuration updating
+   *  @param newConf new configuration
+   */
+  updateConf(newConf) {
+    this.setState({ conf: newConf });
   }
 }
+
+/**
+ *  Tree configuration updating
+ *  @param treeConf current tree configuration
+ *  @param newTreeConf new tree configuration
+ */
+export const updateTreeConf = (treeConf, newTreeConf) => treeConf._updateConf(newTreeConf);
 
 /**
  *  Default configuration
