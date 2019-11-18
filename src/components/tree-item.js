@@ -1,24 +1,44 @@
 import React from 'react';
 
 // For click handler building
-const buildClick = (conf, hasChildren, owner) => {
-  if (conf.listen) {
-    return (item) => {
-      owner.setState({ item: item });
-
+const buildClick = (conf, expand, hasChildren, item, owner) => {
+  return () => {
+    // Events sending
+    if (conf.listen) {
       const event = {
         item: item,
         childConf: conf
       };
-      if (hasChildren) {
-        item.expanded ? call(conf.listen, 'expand', event) :
-                        call(conf.listen, 'collapse', event);
-      } else {
-        call(conf.listen, 'click', event);
-      }
-    };
-  }
-  return (item) => owner.setState({ item: item });
+
+      // Click event
+      call(conf.listen, 'click', event);
+    }
+
+    // Expand/Collapse processing
+    expand.apply(conf, [ item, (item) => owner.setState({ item: item }) ]);
+  };
+};
+// For double click handler building
+const buildDoubleClick = (conf, expand, hasChildren, item, owner) => {
+  return () => {
+    // Events sending
+    if (conf.listen) {
+      const event = {
+        item: item,
+        childConf: conf
+      };
+
+      // Double click event
+      call(conf.listen, 'dbclick', event);
+
+      // Expand/Collapse events
+      item.expanded ? call(conf.listen, 'collapse', event) :
+                      call(conf.listen, 'expand', event);
+    }
+
+    // Expand/Collapse processing
+    expand.apply(conf, [ item, (item) => owner.setState({ item: item }) ]);
+  };
 };
 // For behavior building
 const buildBehavior = (conf, item, index, hasChildren) => {
@@ -83,10 +103,11 @@ export default class TreeItem extends React.Component {
 
     const hasChildren = this.props.hasChildren(item, conf);
     const behavior = buildBehavior(conf, item, index, hasChildren);
-    const click = buildClick(conf, hasChildren, this);
+    // const click = buildClick(conf, expand, hasChildren, item, this);
+    const doubleClick = buildDoubleClick(conf, expand, hasChildren, item, this);
     return (<li key={ 'tree-item-key-' + item._treeIndex } className='mini-tree-item'>
               <React.Fragment>
-                <span className='mini-tree-item-behavior' onClick={ () => expand.apply(conf, [ item, click ]) }>
+                <span className='mini-tree-item-behavior' /*onClick={ click }*/ onDoubleClick={ doubleClick }>
                     { span(build(item, index, conf, 'icon'), 'mini-tree-item-icon') }
                     { span(build(item, index, conf, 'title'), 'mini-tree-item-title') }
                     { behavior }                

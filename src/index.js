@@ -7,3 +7,4 @@ export { Tree, defConf, updateTreeConf, single, multi, param, field };
 // TODO. Check click listener
 // TODO. Add placeholder for tree
 // TODO. Replace Map to WeakMap in `expand.js`
+// TODO. Selection model

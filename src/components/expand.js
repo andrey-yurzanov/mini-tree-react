@@ -27,7 +27,7 @@ export const single = (conf) => {
  *  @author Andrey Yurzanov 
  */
 export const multi = (conf) => {
-  return (item, expand) => { 
+  return (item, expand) => {
     item.expanded = !item.expanded;
     expand.apply(item, [ item ]);    
   };

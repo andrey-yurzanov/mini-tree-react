@@ -6,16 +6,16 @@ import { field } from '../src/components/resolve';
 import { multi } from '../src/components/expand';
 
 const createChildren = (count, depth) => {
+  const children = [];
   if (depth > 0) {
-    const children = [];
     for (let i = 0; i < count; i++) {
       children.push({
         name: 'item-' + depth + '-' + i,
         children: createChildren(count, depth - 1)     
       });
     }
-    return children;
   }
+  return children;
 };
 
 let container = null;
@@ -72,20 +72,20 @@ it('Single expand checking', () => {
   expect(items.length).toBeGreaterThan(0);
 
   act(() => { 
-    items[0].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[0].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
   expect(items[0].parentElement.querySelectorAll('.mini-tree-item').length).toBeGreaterThan(0);
 
   act(() => { 
-    items[0].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[0].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
   expect(items[0].parentElement.querySelectorAll('.mini-tree-item').length).toBe(0);
 
   act(() => { 
-    items[0].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[0].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
   act(() => { 
-    items[1].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[1].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
   expect(items[0].parentElement.querySelectorAll('.mini-tree-item').length).toBe(0);
   expect(items[1].parentElement.querySelectorAll('.mini-tree-item').length).toBeGreaterThan(0);    
@@ -101,54 +101,57 @@ it('Multi expand checking', () => {
   expect(items.length).toBeGreaterThan(0);
 
   act(() => { 
-    items[0].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[0].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
   expect(items[0].parentElement.querySelectorAll('.mini-tree-item').length).toBeGreaterThan(0);
 
   act(() => { 
-    items[0].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[0].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
   expect(items[0].parentElement.querySelectorAll('.mini-tree-item').length).toBe(0);
 
   act(() => { 
-    items[0].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[0].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
   act(() => { 
-    items[1].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[1].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
   expect(items[0].parentElement.querySelectorAll('.mini-tree-item').length).toBeGreaterThan(0);
   expect(items[1].parentElement.querySelectorAll('.mini-tree-item').length).toBeGreaterThan(0);    
 });
 
 it('Listeners checking', () => {
-  let actionFlag = '';
+  let expandActionFlag = '';
+  let collapseActionFlag = '';
+  let dbclickActionFlag = '';
   act(() => {
     const conf = defConf(createChildren(2, 2));
+    conf.expand = multi;
     conf.child.listen = {
-      expand: () => actionFlag = 'expand',
-      collapse: () => actionFlag = 'collapse',
-      click: () => actionFlag = 'click'
+      expand: () => expandActionFlag = 'expand',
+      collapse: () => collapseActionFlag = 'collapse',
+      dbclick: () => dbclickActionFlag = 'dbclick'
     };
     render(<Tree conf={ conf } />, container); 
   });
 
   const items = document.querySelectorAll('.mini-tree-item-behavior');
   act(() => { 
-    items[0].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[0].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
-  expect(actionFlag).toBe('expand');    
+  expect(expandActionFlag).toBe('expand');
 
   act(() => { 
     items[0].parentElement
             .querySelector('.mini-tree-item')
             .querySelector('.mini-tree-item-behavior')
-            .dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+            .dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });  
-  expect(actionFlag).toBe('click');
+  expect(dbclickActionFlag).toBe('dbclick');
 
   act(() => { 
-    items[0].dispatchEvent(new MouseEvent('click', { bubbles: true })); 
+    items[0].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   });
-  expect(actionFlag).toBe('collapse');
+  expect(collapseActionFlag).toBe('collapse');
 });
 
