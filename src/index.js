@@ -1,10 +1,9 @@
 import { Tree, defConf, updateTreeConf } from './components/tree';
-import { single, multi } from './components/expand';
-import { param, field } from './components/resolve';
+import { ExpandModels } from './components/expand';
+import { SelectModels } from './components/select';
+import { ResolveModels } from './components/resolve';
 
-export { Tree, defConf, updateTreeConf, single, multi, param, field };
-// TODO. Add `children` documentation
-// TODO. Check click listener
+export { Tree, defConf, updateTreeConf, ExpandModels, SelectModels, ResolveModels };
+// TODO. Add more documentation
 // TODO. Add placeholder for tree
-// TODO. Replace Map to WeakMap in `expand.js`
-// TODO. Selection model
+// TODO. Selection model tests

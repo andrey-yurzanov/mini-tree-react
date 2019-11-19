@@ -32,3 +32,9 @@ export const param = (children) => {
     return children;
   };
 };
+
+/**
+ *  Standard models of resolving
+ *  @author Andrey Yurzanov
+ */
+export const ResolveModels = { field: field, param: param };

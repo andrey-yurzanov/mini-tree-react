@@ -7,7 +7,7 @@
 .mini-tree-item-behavior {
   display: block;
   line-height: 14px;
-  padding: 15px 0px 15px 25px;
+  padding: 15px 0 15px 25px;
   cursor: default;
   white-space: nowrap;
 }
@@ -22,7 +22,10 @@
 .mini-tree-item-behavior:hover .mini-tree-item-behavior-icon {
   color: rgb(99, 122, 156);
   cursor: pointer;
-}                    
+}
+.mini-tree-item-behavior.selected {
+  color: rgb(64, 116, 191);
+}
 .mini-tree-item {    
   overflow: hidden;
   position: relative;

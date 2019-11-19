@@ -1,10 +1,11 @@
 import React from 'react';
 import TreeItem from './tree-item';
 import { param } from './resolve';
-import { single } from './expand.js';
+import { ExpandModels } from './expand';
+import { SelectModels } from './select';
 
 // For children building
-const buildChildren = (parent, conf, expand, resolve) => {
+const buildChildren = (parent, conf, expand, select, resolve) => {
   const children = resolve.apply(conf, [ parent, conf ]);
   if (children) {
     return children.map((child, index) => {
@@ -22,6 +23,7 @@ const buildChildren = (parent, conf, expand, resolve) => {
                         buildChildren={ buildChildren }
                         conf={ conf }
                         expand={ expand }
+                        select={ select }
                         resolve={ resolve } />);
     });
   }
@@ -49,6 +51,7 @@ export class Tree extends React.Component {
           conf,
           conf.child,
           conf.expand.apply(conf, [ conf ]),
+          conf.select.apply(conf, [ conf ]),
           conf.resolve
         ) }
       </ul>);
@@ -79,7 +82,8 @@ export const updateTreeConf = (treeConf, newTreeConf) => treeConf._updateConf(ne
  */
 export const defConf = (children) => {
   return {
-    expand: single,
+    expand: ExpandModels.single,
+    select: SelectModels.none,
     resolve: param(children),
     child: {
       title: 'title'

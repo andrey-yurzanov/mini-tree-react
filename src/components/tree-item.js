@@ -1,7 +1,7 @@
 import React from 'react';
 
 // For click handler building
-const buildClick = (conf, expand, hasChildren, item, owner) => {
+const buildClick = (conf, select, hasChildren, item, owner) => {
   return () => {
     // Events sending
     if (conf.listen) {
@@ -14,8 +14,8 @@ const buildClick = (conf, expand, hasChildren, item, owner) => {
       call(conf.listen, 'click', event);
     }
 
-    // Expand/Collapse processing
-    expand.apply(conf, [ item, (item) => owner.setState({ item: item }) ]);
+    // Select/Unselect processing
+    select.apply(conf, [ item, (item) => owner.setState({ item: item }) ]);
   };
 };
 // For double click handler building
@@ -99,21 +99,24 @@ export default class TreeItem extends React.Component {
     const item = this.props.item;
     const index = this.props.index;
     const expand = this.props.expand;
+    const select = this.props.select;
     const resolve = this.props.resolve;
 
     const hasChildren = this.props.hasChildren(item, conf);
     const behavior = buildBehavior(conf, item, index, hasChildren);
-    // const click = buildClick(conf, expand, hasChildren, item, this);
+    const click = buildClick(conf, select, hasChildren, item, this);
     const doubleClick = buildDoubleClick(conf, expand, hasChildren, item, this);
     return (<li key={ 'tree-item-key-' + item._treeIndex } className='mini-tree-item'>
               <React.Fragment>
-                <span className='mini-tree-item-behavior' /*onClick={ click }*/ onDoubleClick={ doubleClick }>
+                <span className={'mini-tree-item-behavior' + (item.selected ? ' selected' : '') }
+                      onClick={ click }
+                      onDoubleClick={ doubleClick }>
                     { span(build(item, index, conf, 'icon'), 'mini-tree-item-icon') }
                     { span(build(item, index, conf, 'title'), 'mini-tree-item-title') }
                     { behavior }                
                   </span>
                   <ul className='mini-tree-items'>
-                    { item.expanded ? this.props.buildChildren(item, conf, expand, resolve) : null }
+                    { item.expanded ? this.props.buildChildren(item, conf, expand, select, resolve) : null }
                   </ul>
               </React.Fragment>
             </li>);
