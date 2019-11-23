@@ -1,87 +1,39 @@
 import React from 'react';
 
-// For click handler building
-const buildClick = (conf, select, hasChildren, item, owner) => {
-  return () => {
-    // Events sending
-    if (conf.listen) {
-      const event = {
-        item: item,
-        childConf: conf
-      };
-
-      // Click event
-      call(conf.listen, 'click', event);
+// For events sending
+const sendEvent = (name, event, data) => {
+  const listen = data.childConf.listen;
+  if (listen) {
+    const type = (typeof listen[name]);
+    if (type === 'string') {
+      data.item[listen[name]].apply(data.childConf, [ event, data ]);
+    } else if (type === 'function') {
+      listen[name].apply(data.childConf, [ event, data ]);
     }
-
-    // Select/Unselect processing
-    select.apply(conf, [ item, (item) => owner.setState({ item: item }) ]);
+  }
+};
+// For data building
+const data = (props, state) => {
+  return {
+    treeConf: props.treeConf,
+    childConf: props.conf,
+    parent: props.parent,
+    item: props.item,
+    hasChildren: (state.children != null && state.children.length != 0),
+    isSelected: state.selected,
+    isExpanded: state.expanded
   };
 };
-// For double click handler building
-const buildDoubleClick = (conf, expand, hasChildren, item, owner) => {
-  return () => {
-    // Events sending
-    if (conf.listen) {
-      const event = {
-        item: item,
-        childConf: conf
-      };
-
-      // Double click event
-      call(conf.listen, 'dbclick', event);
-
-      // Expand/Collapse events
-      item.expanded ? call(conf.listen, 'collapse', event) :
-                      call(conf.listen, 'expand', event);
-    }
-
-    // Expand/Collapse processing
-    expand.apply(conf, [ item, (item) => owner.setState({ item: item }) ]);
-  };
-};
-// For behavior building
-const buildBehavior = (conf, item, index, hasChildren) => {
-  const expandClass = item.expanded ? 'behaviorExpanded' : 'behaviorCollapsed';
-  return hasChildren ?
-    span(build(
-      item,
-      index,
-      conf,
-      expandClass
-    ),
-    'mini-tree-item-behavior-icon'
-  ) : null;
-};
-
-// For item element building
-const build = (item, index, conf, confName) => {
-  const type = (typeof conf[confName]);
+// For tree item content building
+const content = (data) => {
+  const conf = data.childConf;
+  const type = (typeof conf.content);
   if (type === 'string') {
-    return item[conf[confName]];
+    return data.item[conf.content];
   } else if (type === 'function') {
-    return conf[confName].apply(conf, [ item, index, conf ]);
+    return conf.content.apply(conf, [ data ]);
   }
-  return null; 
-};
-// For <span> tag building
-const span = (result, className) => {
-  return (<span className={ className }>{ result }</span>);
-};
-// For listener calling
-const call = (listenConf, name, event) => {
-  let handle = null;
-  const type = (typeof listenConf[name]);
-  if (type === 'string') {
-    handle = event.item[listenConf[name]];
-  } else if (type === 'function') {
-    handle = listenConf[name];
-  }
-
-  // If listener was found
-  if (handle) {
-    handle.apply(listenConf, [ name, event ]);
-  }
+  return null;
 };
 
 /**
@@ -91,34 +43,108 @@ const call = (listenConf, name, event) => {
 export default class TreeItem extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { item: this.props.item };
+    this.state = {
+      selected: false,
+      expanded: false,
+      children: null
+    };
+
+    this.updateChildren = this.updateChildren.bind(this);
+    this.updateSelected = this.updateSelected.bind(this);
+    this.updateExpanded = this.updateExpanded.bind(this);
   }
 
-  render() {  
+  componentDidMount() {
     const conf = this.props.conf;
     const item = this.props.item;
-    const index = this.props.index;
+    if (conf && item) {
+      this.props.resolve.apply(conf, [ item, conf, this.updateChildren ]);
+    }
+  }
+
+  render() {
+    const conf = this.props.conf;
+    const item = this.props.item;
     const expand = this.props.expand;
     const select = this.props.select;
-    const resolve = this.props.resolve;
 
-    const hasChildren = this.props.hasChildren(item, conf);
-    const behavior = buildBehavior(conf, item, index, hasChildren);
-    const click = buildClick(conf, select, hasChildren, item, this);
-    const doubleClick = buildDoubleClick(conf, expand, hasChildren, item, this);
+    let childrenList = null;
+    const children = this.state.children;
+    if (children && this.state.expanded) {
+      childrenList = this.props.buildChildren(
+        this.props.treeConf,
+        item,
+        children,
+        conf,
+        expand,
+        select,
+        this.props.resolve
+      );
+    }
+
+    // Click handler building
+    const click = (event) => {
+      const callback = (selected) => {
+        sendEvent('onClick', event.nativeEvent, data(this.props, this.state));
+        this.updateSelected(selected);
+      };
+      select.apply(conf, [ event.nativeEvent, data(this.props, this.state), callback ]);
+    };
+    // Double click handler building
+    const dblClick = (event) => {
+      const callback = (expanded) => {
+        sendEvent('onDoubleClick', event.nativeEvent, data(this.props, this.state));
+        this.updateExpanded(expanded);
+      };
+      expand.apply(conf, [ event.nativeEvent, data(this.props, this.state), callback ]);
+    };
     return (<li key={ 'tree-item-key-' + item._treeIndex } className='mini-tree-item'>
               <React.Fragment>
-                <span className={'mini-tree-item-behavior' + (item.selected ? ' selected' : '') }
+                <span className={'mini-tree-item-behavior' + (this.state.selected ? ' selected' : '') }
                       onClick={ click }
-                      onDoubleClick={ doubleClick }>
-                    { span(build(item, index, conf, 'icon'), 'mini-tree-item-icon') }
-                    { span(build(item, index, conf, 'title'), 'mini-tree-item-title') }
-                    { behavior }                
-                  </span>
+                      onDoubleClick={ dblClick }>
+                  <span className='mini-tree-item-content'>{ content(data(this.props, this.state)) }</span>
+                </span>
                   <ul className='mini-tree-items'>
-                    { item.expanded ? this.props.buildChildren(item, conf, expand, select, resolve) : null }
+                    { childrenList }
                   </ul>
               </React.Fragment>
             </li>);
+  }
+
+  /**
+   *  For children updating.
+   *  @param children new children
+   */
+  updateChildren(children) {
+    this.setState({
+      selected: this.state.selected,
+      expanded: this.state.expanded,
+      children: children
+    });
+  }
+
+  /**
+   *  For selection value updating.
+   *  @param selected new value
+   */
+  updateSelected(selected) {
+    this.setState({
+      selected: selected,
+      expanded: this.state.expanded,
+      children: this.state.children
+    });
+  }
+
+  /**
+   *  For expand value updating.
+   *  @param expanded new value
+   */
+  updateExpanded(expanded) {
+    this.setState({
+      selected: this.state.selected,
+      expanded: expanded,
+      children: this.state.children
+    });
   }
 }

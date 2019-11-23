@@ -6,14 +6,13 @@ export const RESOLVE_FIELD = 'children';
 /**
  *  Resolve children by field
  *  @author Andrey Yurzanov
- *  @param parent object who contains children field
- *  @param childConf tree child configuration
  */
-export const field = () => (parent, childConf) => {
+export const field = () => (parent, childConf, resolve) => {
   if (childConf.children) {
-    return parent[childConf.children];
+    resolve.apply(childConf, [ parent[childConf.children] ]);
+  } else {
+    resolve.apply(childConf, [ parent[RESOLVE_FIELD] ]);
   }
-  return parent[RESOLVE_FIELD];
 };
 
 /**
@@ -22,14 +21,16 @@ export const field = () => (parent, childConf) => {
  *  @param children tree children
  */
 export const param = (children) => {
-  return (parent, childConf) => {
+  return (parent, childConf, resolve) => {
     if (parent._treeIndex) {
       if (childConf && childConf.children) {
-        return parent[childConf.children];
+        resolve.apply(childConf, [ parent[childConf.children] ]);
+      } else {
+        resolve.apply(childConf, [ parent[RESOLVE_FIELD] ]);
       }
-      return parent[RESOLVE_FIELD]; 
+    } else {
+      resolve.apply(childConf, [ children ]);
     }
-    return children;
   };
 };
 

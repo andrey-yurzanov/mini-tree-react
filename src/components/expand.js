@@ -1,10 +1,10 @@
 /**
  *  No expanding
  *  @param conf tree configuration
- *  @return empty function
+ *  @return function without change selection
  *  @author Andrey Yurzanov
  */
-export const none = (conf) => (item, expand) => {};
+export const none = (conf) => (event, data, expand) => expand.apply(data, [ data.isExpanded ]);
 
 /**
  *  For single expanding
@@ -14,19 +14,19 @@ export const none = (conf) => (item, expand) => {};
  */
 export const single = (conf) => {
   let items = new Map();
-  return (item, expand) => {
+  return (event, data, expand) => {
     if (items.size) {
       for (const prev of items.values()) {
-        if (!item._treeIndex.startsWith(prev.item._treeIndex) && prev.item.expanded) {
-          prev.item.expanded = false;
-          prev.expand.apply(prev, [ prev.item ]);
+        const prevData = prev.data;
+        if (!data.item._treeIndex.startsWith(prevData.item._treeIndex) && prevData.isExpanded) {
+          prev.expand.apply(prevData.item, [ false ]);
         }
       }
     }
-    item.expanded = !item.expanded;
-    expand.apply(item, [ item ]);
+    expand.apply(data.item, [ !data.isExpanded ]);
 
-    items.set(item._treeIndex, { item: item, expand: expand });
+    data.isExpanded = !data.isExpanded;
+    items.set(data.item._treeIndex, { data: data, expand: expand });
   };
 };
 
@@ -36,12 +36,7 @@ export const single = (conf) => {
  *  @return function for multi expanding
  *  @author Andrey Yurzanov 
  */
-export const multi = (conf) => {
-  return (item, expand) => {
-    item.expanded = !item.expanded;
-    expand.apply(item, [ item ]);    
-  };
-};
+export const multi = (conf) => (event, data, expand) => expand.apply(data, [ !data.isExpanded ]);
 
 /**
  *  Standard models of expanding

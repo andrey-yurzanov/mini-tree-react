@@ -5,29 +5,25 @@ import { ExpandModels } from './expand';
 import { SelectModels } from './select';
 
 // For children building
-const buildChildren = (parent, conf, expand, select, resolve) => {
-  const children = resolve.apply(conf, [ parent, conf ]);
-  if (children) {
-    return children.map((child, index) => {
-      if (parent && parent._treeIndex) {
-        child._treeIndex = parent._treeIndex + index;
-      } else {
-        child._treeIndex = index + '';
-      }
+const buildChildren = (treeConf, parent, children, conf, expand, select, resolve) => {
+  return children.map((child, index) => {
+    if (parent && parent._treeIndex) {
+      child._treeIndex = parent._treeIndex + index;
+    } else {
+      child._treeIndex = index + '';
+    }
 
-      return (<TreeItem key={ 'tree-item-' + child._treeIndex } 
-                        parent={ parent }
-                        item={ child }
-                        index={ index }
-                        hasChildren={ (item) => resolve.apply(conf, [ item, conf ]) }
-                        buildChildren={ buildChildren }
-                        conf={ conf }
-                        expand={ expand }
-                        select={ select }
-                        resolve={ resolve } />);
-    });
-  }
-  return [];
+    return (<TreeItem key={ 'tree-item-' + child._treeIndex }
+                      treeConf={ treeConf }
+                      parent={ parent }
+                      item={ child }
+                      index={ index }
+                      buildChildren={ buildChildren }
+                      conf={ conf }
+                      expand={ expand }
+                      select={ select }
+                      resolve={ resolve } />);
+  });
 };
 
 /**
@@ -37,43 +33,46 @@ const buildChildren = (parent, conf, expand, select, resolve) => {
 export class Tree extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { conf: this.props.conf };
+    this.state = { children: null };
+    this.updateChildren = this.updateChildren.bind(this);
+  }
 
-    this.updateConf = this.updateConf.bind(this);
+  componentDidMount() {
+    const conf = this.props.conf;
+    if (conf) {
+      conf.resolve.apply(conf, [ conf, conf.child, this.updateChildren ]);
+    }
   }
 
   render() {
     const conf = this.props.conf;
     if (conf) {
-      conf._updateConf = this.updateConf;
-      return (<ul className='mini-tree'>
-        { buildChildren(
-          conf,
-          conf.child,
-          conf.expand.apply(conf, [ conf ]),
-          conf.select.apply(conf, [ conf ]),
-          conf.resolve
-        ) }
-      </ul>);
+      const children = this.state.children;
+      if (children) {
+        return (<ul className='mini-tree'>
+          { buildChildren(
+            conf,
+            conf,
+            children,
+            conf.child,
+            conf.expand.apply(conf, [ conf ]),
+            conf.select.apply(conf, [ conf ]),
+            conf.resolve
+          ) }
+        </ul>);
+      }
     }
     return (<ul className='mini-tree' />);
   }
 
   /**
-   *  For configuration updating
-   *  @param newConf new configuration
+   *  For children updating.
+   *  @param children new children
    */
-  updateConf(newConf) {
-    this.setState({ conf: newConf });
+  updateChildren(children) {
+    this.setState({ children: children });
   }
 }
-
-/**
- *  Tree configuration updating
- *  @param treeConf current tree configuration
- *  @param newTreeConf new tree configuration
- */
-export const updateTreeConf = (treeConf, newTreeConf) => treeConf._updateConf(newTreeConf);
 
 /**
  *  Default configuration
@@ -82,11 +81,11 @@ export const updateTreeConf = (treeConf, newTreeConf) => treeConf._updateConf(ne
  */
 export const defConf = (children) => {
   return {
-    expand: ExpandModels.single,
+    expand: ExpandModels.multi,
     select: SelectModels.none,
     resolve: param(children),
     child: {
-      title: 'title'
+      content: 'title'
     }
   };
 };

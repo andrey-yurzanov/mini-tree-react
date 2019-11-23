@@ -1,10 +1,10 @@
 /**
  *  No selection
  *  @param conf tree configuration
- *  @return empty function
+ *  @return function without change selection
  *  @author Andrey Yurzanov
  */
-export const none = (conf) => (item, select) => {};
+export const none = (conf) => (event, data, select) => select.apply(data, [ data.isSelected ]);
 
 /**
  *  For single selecting
@@ -14,19 +14,19 @@ export const none = (conf) => (item, select) => {};
  */
 export const single = (conf) => {
   let items = new Map();
-  return (item, select) => {
+  return (event, data, select) => {
     if (items.size) {
       for (const prev of items.values()) {
-        if (item._treeIndex !== prev.item._treeIndex && prev.item.selected) {
-          prev.item.selected = false;
-          prev.select.apply(prev, [ prev.item ]);
+        const prevData = prev.data;
+        if (data.item._treeIndex !== prevData.item._treeIndex && prevData.isSelected) {
+          prev.select.apply(prev, [ false ]);
         }
       }
     }
-    item.selected = !item.selected;
-    select.apply(item, [ item ]);
+    select.apply(data.item, [ !data.isSelected ]);
 
-    items.set(item._treeIndex, { item: item, select: select });
+    data.isSelected = !data.isSelected;
+    items.set(data.item._treeIndex, { data: data, select: select });
   };
 };
 
@@ -36,12 +36,7 @@ export const single = (conf) => {
  *  @return function for multi selection processing
  *  @author Andrey Yurzanov
  */
-export const multi = (conf) => {
-  return (item, select) => {
-    item.selected = !item.selected;
-    select.apply(item, [ item ]);
-  };
-};
+export const multi = (conf) => (event, data, select) => select.apply(data, [ !data.isSelected ]);
 
 /**
  *  Standard selection models
