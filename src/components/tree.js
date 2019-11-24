@@ -5,7 +5,7 @@ import { ExpandModels } from './expand';
 import { SelectModels } from './select';
 
 // For children building
-const buildChildren = (treeConf, parent, children, conf, expand, select, resolve) => {
+const buildChildren = (treeConf, parent, children, conf, expand, select, resolve, methodsStore) => {
   return children.map((child, index) => {
     if (parent && parent._treeIndex) {
       child._treeIndex = parent._treeIndex + index;
@@ -22,7 +22,8 @@ const buildChildren = (treeConf, parent, children, conf, expand, select, resolve
                       conf={ conf }
                       expand={ expand }
                       select={ select }
-                      resolve={ resolve } />);
+                      resolve={ resolve }
+                      methodsStore={ methodsStore } />);
   });
 };
 
@@ -34,7 +35,10 @@ export class Tree extends React.Component {
   constructor(props) {
     super(props);
     this.state = { children: null };
+    this.methodsStore = new Map();
+
     this.updateChildren = this.updateChildren.bind(this);
+    this.findItem = this.findItem.bind(this);
   }
 
   componentDidMount() {
@@ -47,6 +51,9 @@ export class Tree extends React.Component {
   render() {
     const conf = this.props.conf;
     if (conf) {
+      conf._updateChildren = this.updateChildren;
+      conf._findItem = this.findItem;
+
       const children = this.state.children;
       if (children) {
         return (<ul className='mini-tree'>
@@ -57,7 +64,8 @@ export class Tree extends React.Component {
             conf.child,
             conf.expand.apply(conf, [ conf ]),
             conf.select.apply(conf, [ conf ]),
-            conf.resolve
+            conf.resolve,
+            this.methodsStore
           ) }
         </ul>);
       }
@@ -72,7 +80,24 @@ export class Tree extends React.Component {
   updateChildren(children) {
     this.setState({ children: children });
   }
+
+  /**
+   *  For item searching
+   *  @param selector value for item searching
+   *  @return found item or undefined
+   */
+  findItem(selector) {
+    return this.methodsStore.get(selector);
+  }
 }
+
+/**
+ *  Tree item searching
+ *  @param conf tree configuration
+ *  @param selector value for searching
+ *  @return found item or undefined
+ */
+export const findItem = (conf, selector) => conf._findItem(selector);
 
 /**
  *  Default configuration
@@ -85,6 +110,7 @@ export const defConf = (children) => {
     select: SelectModels.none,
     resolve: param(children),
     child: {
+      id: 'id',
       content: 'title'
     }
   };

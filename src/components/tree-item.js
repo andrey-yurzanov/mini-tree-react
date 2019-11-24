@@ -24,14 +24,14 @@ const data = (props, state) => {
     isExpanded: state.expanded
   };
 };
-// For tree item content building
-const content = (data) => {
+// For property extracting
+const get = (data, name) => {
   const conf = data.childConf;
-  const type = (typeof conf.content);
+  const type = (typeof conf[name]);
   if (type === 'string') {
-    return data.item[conf.content];
+    return data.item[conf[name]];
   } else if (type === 'function') {
-    return conf.content.apply(conf, [ data ]);
+    return conf[name].apply(conf, [ data ]);
   }
   return null;
 };
@@ -52,6 +52,12 @@ export default class TreeItem extends React.Component {
     this.updateChildren = this.updateChildren.bind(this);
     this.updateSelected = this.updateSelected.bind(this);
     this.updateExpanded = this.updateExpanded.bind(this);
+    this.updateMethodsStore = this.updateMethodsStore.bind(this);
+    this.hasChildren = this.hasChildren.bind(this);
+    this.isSelected = this.isSelected.bind(this);
+    this.isExpanded = this.isExpanded.bind(this);
+
+    this.updateMethodsStore();
   }
 
   componentDidMount() {
@@ -78,7 +84,8 @@ export default class TreeItem extends React.Component {
         conf,
         expand,
         select,
-        this.props.resolve
+        this.props.resolve,
+        this.props.methodsStore
       );
     }
 
@@ -103,7 +110,9 @@ export default class TreeItem extends React.Component {
                 <span className={'mini-tree-item-behavior' + (this.state.selected ? ' selected' : '') }
                       onClick={ click }
                       onDoubleClick={ dblClick }>
-                  <span className='mini-tree-item-content'>{ content(data(this.props, this.state)) }</span>
+                  <span className='mini-tree-item-content'>
+                    { get(data(this.props, this.state), 'content') }
+                  </span>
                 </span>
                   <ul className='mini-tree-items'>
                     { childrenList }
@@ -146,5 +155,49 @@ export default class TreeItem extends React.Component {
       expanded: expanded,
       children: this.state.children
     });
+  }
+
+  /**
+   *  Selection checking
+   *  @return true if item is selected else false
+   */
+  isSelected() {
+    return this.state.selected;
+  }
+
+  /**
+   *  Expand checking
+   *  @return true if item is expanded else false
+   */
+  isExpanded() {
+    return this.state.expanded;
+  }
+
+  /**
+   *  Checking existence of children
+   *  @return true if children exist, else false
+   */
+  hasChildren() {
+    return (this.state.children != null && this.state.children.length != 0);
+  }
+
+  /**
+   *  For methods updating
+   */
+  updateMethodsStore() {
+    const id = get(data(this.props, this.state), 'id');
+    const methods = {
+      setChildren: this.updateChildren,
+      setSelected: this.updateSelected,
+      setExpanded: this.updateExpanded,
+      hasChildren: this.hasChildren,
+      isSelected: this.isSelected,
+      isExpanded: this.isExpanded
+    };
+
+    if (id) {
+      this.props.methodsStore.set(id, methods);
+    }
+    this.props.methodsStore.set(this.props.item._treeIndex, methods);
   }
 }
