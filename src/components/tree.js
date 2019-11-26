@@ -39,6 +39,9 @@ export class Tree extends React.Component {
 
     this.updateChildren = this.updateChildren.bind(this);
     this.findItem = this.findItem.bind(this);
+    this.updateMethods = this.updateMethods.bind(this);
+
+    this.updateMethods();
   }
 
   componentDidMount() {
@@ -47,13 +50,13 @@ export class Tree extends React.Component {
       conf.resolve.apply(conf, [ conf, conf.child, this.updateChildren ]);
     }
   }
+  componentWillUnmount() {
+    this.methodsStore.clear();
+  }
 
   render() {
     const conf = this.props.conf;
     if (conf) {
-      conf._updateChildren = this.updateChildren;
-      conf._findItem = this.findItem;
-
       const children = this.state.children;
       if (children) {
         return (<ul className='mini-tree'>
@@ -88,6 +91,14 @@ export class Tree extends React.Component {
    */
   findItem(selector) {
     return this.methodsStore.get(selector);
+  }
+
+  /**
+   *  For tree methods updating
+   */
+  updateMethods() {
+    const conf = this.props.conf;
+    conf._findItem = this.findItem;
   }
 }
 

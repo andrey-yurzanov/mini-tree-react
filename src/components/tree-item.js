@@ -50,12 +50,16 @@ export default class TreeItem extends React.Component {
     };
 
     this.updateChildren = this.updateChildren.bind(this);
-    this.updateSelected = this.updateSelected.bind(this);
-    this.updateExpanded = this.updateExpanded.bind(this);
+    this.toggleSelected = this.toggleSelected.bind(this);
+    this.updateSelectedByClick = this.updateSelectedByClick.bind(this);
+    this.toggleExpanded = this.toggleExpanded.bind(this);
+    this.updateExpandedByDblClick = this.updateExpandedByDblClick.bind(this);
     this.updateMethodsStore = this.updateMethodsStore.bind(this);
     this.hasChildren = this.hasChildren.bind(this);
     this.isSelected = this.isSelected.bind(this);
     this.isExpanded = this.isExpanded.bind(this);
+    this.getData = this.getData.bind(this);
+    this.getParent = this.getParent.bind(this);
 
     this.updateMethodsStore();
   }
@@ -88,28 +92,11 @@ export default class TreeItem extends React.Component {
         this.props.methodsStore
       );
     }
-
-    // Click handler building
-    const click = (event) => {
-      const callback = (selected) => {
-        sendEvent('onClick', event.nativeEvent, data(this.props, this.state));
-        this.updateSelected(selected);
-      };
-      select.apply(conf, [ event.nativeEvent, data(this.props, this.state), callback ]);
-    };
-    // Double click handler building
-    const dblClick = (event) => {
-      const callback = (expanded) => {
-        sendEvent('onDoubleClick', event.nativeEvent, data(this.props, this.state));
-        this.updateExpanded(expanded);
-      };
-      expand.apply(conf, [ event.nativeEvent, data(this.props, this.state), callback ]);
-    };
     return (<li key={ 'tree-item-key-' + item._treeIndex } className='mini-tree-item'>
               <React.Fragment>
                 <span className={'mini-tree-item-behavior' + (this.state.selected ? ' selected' : '') }
-                      onClick={ click }
-                      onDoubleClick={ dblClick }>
+                      onClick={ this.updateSelectedByClick }
+                      onDoubleClick={ this.updateExpandedByDblClick }>
                   <span className='mini-tree-item-content'>
                     { get(data(this.props, this.state), 'content') }
                   </span>
@@ -134,27 +121,71 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  For selection value updating.
-   *  @param selected new value
+   *  For selection value updating
    */
-  updateSelected(selected) {
-    this.setState({
-      selected: selected,
-      expanded: this.state.expanded,
-      children: this.state.children
-    });
+  toggleSelected() {
+    const conf = this.props.conf;
+    const select = this.props.select;
+    const callback = (selected) => {
+      this.setState({
+        selected: selected,
+        expanded: this.state.expanded,
+        children: this.state.children
+      });
+    };
+    select.apply(conf, [ null, data(this.props, this.state), callback ]);
   }
 
   /**
-   *  For expand value updating.
-   *  @param expanded new value
+   *  For selection value updating by click
+   *  @param event click event
    */
-  updateExpanded(expanded) {
-    this.setState({
-      selected: this.state.selected,
-      expanded: expanded,
-      children: this.state.children
-    });
+  updateSelectedByClick(event) {
+    const conf = this.props.conf;
+    const select = this.props.select;
+    const callback = (selected) => {
+      sendEvent('onClick', event.nativeEvent, data(this.props, this.state));
+      this.setState({
+        selected: selected,
+        expanded: this.state.expanded,
+        children: this.state.children
+      });
+    };
+    select.apply(conf, [ event.nativeEvent, data(this.props, this.state), callback ]);
+  }
+
+  /**
+   *  For expand value updating
+   */
+  toggleExpanded() {
+    const conf = this.props.conf;
+    const expand = this.props.expand;
+    const callback = (expanded) => {
+      this.setState({
+        selected: this.state.selected,
+        expanded: expanded,
+        children: this.state.children
+      });
+    };
+    expand.apply(conf, [ null, data(this.props, this.state), callback ]);
+  }
+
+  /**
+   *  For expand value updating by double click
+   *  @param event double click event
+   */
+  updateExpandedByDblClick(event) {
+    const conf = this.props.conf;
+    const expand = this.props.expand;
+    const callback = (expanded) => {
+      sendEvent('onDoubleClick', event.nativeEvent, data(this.props, this.state));
+      this.setState({
+        selected: this.state.selected,
+        expanded: expanded,
+        children: this.state.children
+      });
+    };
+    expand.apply(conf, [ event.nativeEvent, data(this.props, this.state), callback ]);
   }
 
   /**
@@ -182,17 +213,36 @@ export default class TreeItem extends React.Component {
   }
 
   /**
+   *  To get item's data
+   *  @return item's data
+   */
+  getData() {
+    return this.props.item;
+  }
+
+  /**
+   *  To get item's parent
+   *  @return item's parent
+   */
+  getParent() {
+    if (this.props.parent._treeIndex) {
+      return this.props.parent;
+    }
+  }
+
+  /**
    *  For methods updating
    */
   updateMethodsStore() {
     const id = get(data(this.props, this.state), 'id');
     const methods = {
-      setChildren: this.updateChildren,
-      setSelected: this.updateSelected,
-      setExpanded: this.updateExpanded,
+      toggleSelected: this.toggleSelected,
+      toggleExpanded: this.toggleExpanded,
       hasChildren: this.hasChildren,
       isSelected: this.isSelected,
-      isExpanded: this.isExpanded
+      isExpanded: this.isExpanded,
+      getData: this.getData,
+      getParent: this.getParent
     };
 
     if (id) {
