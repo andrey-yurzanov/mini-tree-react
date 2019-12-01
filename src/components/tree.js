@@ -12,7 +12,6 @@ const buildChildren = (treeConf, parent, children, conf, expand, select, resolve
     } else {
       child._treeIndex = index + '';
     }
-
     return (<TreeItem key={ 'tree-item-' + child._treeIndex }
                       treeConf={ treeConf }
                       parent={ parent }
@@ -26,6 +25,8 @@ const buildChildren = (treeConf, parent, children, conf, expand, select, resolve
                       methodsStore={ methodsStore } />);
   });
 };
+// For trees storing
+const treeMethodsStore = new Map();
 
 /**
  *  Tree realization
@@ -38,19 +39,22 @@ export class Tree extends React.Component {
     this.methodsStore = new Map();
 
     this.updateChildren = this.updateChildren.bind(this);
-    this.findItem = this.findItem.bind(this);
-    this.updateMethods = this.updateMethods.bind(this);
-
-    this.updateMethods();
+    this.findChild = this.findChild.bind(this);
+    this.hasChildren = this.hasChildren.bind(this);
+    this.getChildren = this.getChildren.bind(this);
+    this.mountMethodsStore = this.mountMethodsStore.bind(this);
+    this.unmountMethodsStore = this.unmountMethodsStore.bind(this);
   }
 
   componentDidMount() {
+    this.mountMethodsStore();
     const conf = this.props.conf;
     if (conf) {
       conf.resolve.apply(conf, [ conf, conf.child, this.updateChildren ]);
     }
   }
   componentWillUnmount() {
+    this.unmountMethodsStore();
     this.methodsStore.clear();
   }
 
@@ -85,44 +89,82 @@ export class Tree extends React.Component {
   }
 
   /**
-   *  For item searching
-   *  @param selector value for item searching
-   *  @return found item or undefined
+   *  For child searching
+   *  @param selector value for child searching
+   *  @return found child or undefined
    */
-  findItem(selector) {
+  findChild(selector) {
     return this.methodsStore.get(selector);
   }
 
   /**
-   *  For tree methods updating
+   *  Checking existence of children
+   *  @return true if children exist, else false
    */
-  updateMethods() {
+  hasChildren() {
+    return (this.state.children != null && this.state.children.length != 0);
+  }
+
+  /**
+   *  To get tree's children
+   *  @return children or empty array
+   */
+  getChildren() {
+    const children = this.state.children;
+    const methods = this.methodsStore;
+    if (children) {
+      return children.map((child) => methods.get(child._treeIndex));
+    }
+    return [];
+  }
+
+  /**
+   *  Mounting of methods
+   */
+  mountMethodsStore() {
     const conf = this.props.conf;
-    conf._findItem = this.findItem;
+    if (conf && conf.id) {
+      treeMethodsStore.set(conf.id, {
+        findChild: this.findChild,
+        hasChildren: this.hasChildren,
+        getChildren: this.getChildren
+      });
+    }
+  }
+
+  /**
+   *  Unmounting of methods
+   */
+  unmountMethodsStore() {
+    const conf = this.props.conf;
+    if (conf && conf.id) {
+      treeMethodsStore.delete(conf.id);
+    }
   }
 }
 
 /**
- *  Tree item searching
- *  @param conf tree configuration
- *  @param selector value for searching
- *  @return found item or undefined
+ *  For tree searching by id
+ *  @param id tree's identifier
+ *  @return found tree or undefined
  */
-export const findItem = (conf, selector) => conf._findItem(selector);
+export const findTree = (id) => treeMethodsStore.get(id);
 
 /**
  *  Default configuration
+ *  @param id tree's identifier
  *  @param children tree's items
  *  @returns default tree configuration
  */
-export const defConf = (children) => {
+export const defConf = (id, children) => {
   return {
+    id: id,
     expand: ExpandModels.multi,
     select: SelectModels.none,
     resolve: param(children),
     child: {
       id: 'id',
-      content: 'title'
+      content: 'content'
     }
   };
 };

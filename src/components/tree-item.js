@@ -49,27 +49,32 @@ export default class TreeItem extends React.Component {
       children: null
     };
 
+    this.hasChildren = this.hasChildren.bind(this);
+    this.getChildren = this.getChildren.bind(this);
     this.updateChildren = this.updateChildren.bind(this);
     this.toggleSelected = this.toggleSelected.bind(this);
     this.updateSelectedByClick = this.updateSelectedByClick.bind(this);
     this.toggleExpanded = this.toggleExpanded.bind(this);
     this.updateExpandedByDblClick = this.updateExpandedByDblClick.bind(this);
-    this.updateMethodsStore = this.updateMethodsStore.bind(this);
-    this.hasChildren = this.hasChildren.bind(this);
+    this.mountMethodsStore = this.mountMethodsStore.bind(this);
+    this.unmountMethodsStore = this.unmountMethodsStore.bind(this);
     this.isSelected = this.isSelected.bind(this);
     this.isExpanded = this.isExpanded.bind(this);
     this.getData = this.getData.bind(this);
     this.getParent = this.getParent.bind(this);
-
-    this.updateMethodsStore();
   }
 
   componentDidMount() {
+    this.mountMethodsStore();
+
     const conf = this.props.conf;
     const item = this.props.item;
     if (conf && item) {
       this.props.resolve.apply(conf, [ item, conf, this.updateChildren ]);
     }
+  }
+  componentWillUnmount() {
+    this.unmountMethodsStore();
   }
 
   render() {
@@ -80,7 +85,7 @@ export default class TreeItem extends React.Component {
 
     let childrenList = null;
     const children = this.state.children;
-    if (children && this.state.expanded) {
+    if (children) {
       childrenList = this.props.buildChildren(
         this.props.treeConf,
         item,
@@ -101,7 +106,7 @@ export default class TreeItem extends React.Component {
                     { get(data(this.props, this.state), 'content') }
                   </span>
                 </span>
-                  <ul className='mini-tree-items'>
+                  <ul className={ 'mini-tree-items' + (this.state.expanded ? ' expanded' : '') }>
                     { childrenList }
                   </ul>
               </React.Fragment>
@@ -213,6 +218,19 @@ export default class TreeItem extends React.Component {
   }
 
   /**
+   *  To get item's children
+   *  @return children or empty array
+   */
+  getChildren() {
+    const children = this.state.children;
+    const methods = this.props.methodsStore;
+    if (children) {
+      return children.map((child) => methods.get(child._treeIndex));
+    }
+    return [];
+  }
+
+  /**
    *  To get item's data
    *  @return item's data
    */
@@ -225,20 +243,22 @@ export default class TreeItem extends React.Component {
    *  @return item's parent
    */
   getParent() {
-    if (this.props.parent._treeIndex) {
-      return this.props.parent;
+    const index = this.props.parent._treeIndex;
+    if (index) {
+      return this.props.methodsStore.get(index);
     }
   }
 
   /**
-   *  For methods updating
+   *  Mounting of methods
    */
-  updateMethodsStore() {
+  mountMethodsStore() {
     const id = get(data(this.props, this.state), 'id');
     const methods = {
       toggleSelected: this.toggleSelected,
       toggleExpanded: this.toggleExpanded,
       hasChildren: this.hasChildren,
+      getChildren: this.getChildren,
       isSelected: this.isSelected,
       isExpanded: this.isExpanded,
       getData: this.getData,
@@ -249,5 +269,16 @@ export default class TreeItem extends React.Component {
       this.props.methodsStore.set(id, methods);
     }
     this.props.methodsStore.set(this.props.item._treeIndex, methods);
+  }
+
+  /**
+   *  Unmounting of methods
+   */
+  unmountMethodsStore() {
+    const id = get(data(this.props, this.state), 'id');
+    if (id) {
+      this.props.methodsStore.delete(id);
+    }
+    this.props.methodsStore.delete(this.props.item._treeIndex);
   }
 }

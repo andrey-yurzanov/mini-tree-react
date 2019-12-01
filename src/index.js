@@ -1,4 +1,4 @@
-import { Tree, defConf, findItem, getSelectedItems } from './components/tree';
+import { Tree, defConf, findTree } from './components/tree';
 import { ExpandModels } from './components/expand';
 import { SelectModels } from './components/select';
 import { ResolveModels } from './components/resolve';
@@ -6,8 +6,7 @@ import { ResolveModels } from './components/resolve';
 export {
   Tree,
   defConf,
-  findItem,
-  getSelectedItems,
+  findTree,
   ExpandModels,
   SelectModels,
   ResolveModels

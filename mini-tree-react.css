@@ -15,29 +15,12 @@
   color: rgb(99, 122, 156);
   cursor: pointer;
 }
-.mini-tree-item-behavior:hover .mini-tree-item-icon {
-  color: rgb(99, 122, 156);
-  cursor: pointer;
-}
-.mini-tree-item-behavior:hover .mini-tree-item-behavior-icon {
-  color: rgb(99, 122, 156);
-  cursor: pointer;
-}
 .mini-tree-item-behavior.selected {
   color: rgb(64, 116, 191);
 }
 .mini-tree-item {    
   overflow: hidden;
   position: relative;
-}
-.mini-tree-item-icon {
-  margin-right: 5px;              
-}
-.mini-tree-item-behavior-icon {
-  margin-left: 5px;
-}
-.mini-tree-item.expanded .mini-tree-items {
-  display: none;
 }
 .mini-tree-item:before {    
   top: 22px;
@@ -52,4 +35,8 @@
   list-style: none;
   margin-left: 25px;
   border-left: 0.5px solid #ccc;
+  display: none;
+}
+.mini-tree-items.expanded {
+  display: inherit;
 }
