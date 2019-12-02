@@ -1,17 +1,5 @@
 import React from 'react';
 
-// For events sending
-const sendEvent = (name, event, data) => {
-  const listen = data.childConf.listen;
-  if (listen) {
-    const type = (typeof listen[name]);
-    if (type === 'string') {
-      data.item[listen[name]].apply(data.childConf, [ event, data ]);
-    } else if (type === 'function') {
-      listen[name].apply(data.childConf, [ event, data ]);
-    }
-  }
-};
 // For data building
 const data = (props, state) => {
   return {
@@ -132,11 +120,14 @@ export default class TreeItem extends React.Component {
     const conf = this.props.conf;
     const select = this.props.select;
     const callback = (selected) => {
-      this.setState({
-        selected: selected,
-        expanded: this.state.expanded,
-        children: this.state.children
-      });
+      if (this.state.selected !== selected) {
+        this.setState({
+          selected: selected,
+          expanded: this.state.expanded,
+          children: this.state.children
+        });
+        this.sendEvent(selected ? 'onSelect' : 'onUnselect', null);
+      }
     };
     select.apply(conf, [ null, data(this.props, this.state), callback ]);
   }
@@ -149,12 +140,15 @@ export default class TreeItem extends React.Component {
     const conf = this.props.conf;
     const select = this.props.select;
     const callback = (selected) => {
-      sendEvent('onClick', event.nativeEvent, data(this.props, this.state));
-      this.setState({
-        selected: selected,
-        expanded: this.state.expanded,
-        children: this.state.children
-      });
+      this.sendEvent('onClick', event.nativeEvent);
+      if (this.state.selected !== selected) {
+        this.setState({
+          selected: selected,
+          expanded: this.state.expanded,
+          children: this.state.children
+        });
+        this.sendEvent(selected ? 'onSelect' : 'onUnselect', event.nativeEvent);
+      }
     };
     select.apply(conf, [ event.nativeEvent, data(this.props, this.state), callback ]);
   }
@@ -166,11 +160,14 @@ export default class TreeItem extends React.Component {
     const conf = this.props.conf;
     const expand = this.props.expand;
     const callback = (expanded) => {
-      this.setState({
-        selected: this.state.selected,
-        expanded: expanded,
-        children: this.state.children
-      });
+      if (this.state.expanded !== expanded) {
+        this.setState({
+          selected: this.state.selected,
+          expanded: expanded,
+          children: this.state.children
+        });
+        this.sendEvent(expanded ? 'onExpand' : 'onCollapse', null);
+      }
     };
     expand.apply(conf, [ null, data(this.props, this.state), callback ]);
   }
@@ -183,12 +180,15 @@ export default class TreeItem extends React.Component {
     const conf = this.props.conf;
     const expand = this.props.expand;
     const callback = (expanded) => {
-      sendEvent('onDoubleClick', event.nativeEvent, data(this.props, this.state));
-      this.setState({
-        selected: this.state.selected,
-        expanded: expanded,
-        children: this.state.children
-      });
+      this.sendEvent('onDoubleClick', event.nativeEvent);
+      if (this.state.expanded !== expanded) {
+        this.setState({
+          selected: this.state.selected,
+          expanded: expanded,
+          children: this.state.children
+        });
+        this.sendEvent(expanded ? 'onExpand' : 'onCollapse', event.nativeEvent);
+      }
     };
     expand.apply(conf, [ event.nativeEvent, data(this.props, this.state), callback ]);
   }
@@ -280,5 +280,25 @@ export default class TreeItem extends React.Component {
       this.props.methodsStore.delete(id);
     }
     this.props.methodsStore.delete(this.props.item._treeIndex);
+  }
+
+  /**
+   *  For events sending
+   *  @param name event name
+   *  @param event native event
+   */
+  sendEvent(name, event) {
+    const conf = this.props.conf;
+    const listen = conf.listen;
+    if (listen) {
+      const item = this.props.item;
+      const data = this.props.methodsStore.get(item._treeIndex);
+      const type = (typeof listen[name]);
+      if (type === 'string') {
+        item[listen[name]].apply(conf, [ event, data ]);
+      } else if (type === 'function') {
+        listen[name].apply(conf, [ event, data ]);
+      }
+    }
   }
 }
