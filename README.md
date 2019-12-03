@@ -5,9 +5,12 @@ Simple tree view realization for react.js
 ## Table of contents
 * [Getting started](#getting-started)
   * [Install](#install)
-  * [Base expample](#base-example)
-* [Main Concepts](#main-concepts)
-  * [Item content](#item-content)
+  * [Base example](#base-example)
+* [Tree configuration](#tree-configuration)
+  * [Tree methods](#tree-methods)
+* [Child configuration](#child-configuration)
+  * [Listeners](#listeners)
+  * [Children methods](#children-methods)
   * [Expanding / Collapsing](#expand-collapse)
   * [Resolve children](#children-resolve)
   * [Listeners](#listeners)
@@ -19,7 +22,7 @@ Simple tree view realization for react.js
 ## Getting started
 
   ### Install
-  For start using `mini-tree-react` you need install `mini-tree-react` package. Enter the command: `npm i mini-tree-react --save-dev`.
+  For start using `mini-tree-react` you need to install `mini-tree-react` package. Enter the command: `npm i mini-tree-react --save-dev`.
 
   ### Base example
 
@@ -30,65 +33,227 @@ Simple tree view realization for react.js
 
   const children = [
     {
-      title: 'Item-1',
+      content: 'Item-1',
       children: [
         {
-          title: 'Subitem-1-1'
+          content: 'Subitem-1-1'
         },
         {
-          title: 'Subitem-1-2'
+          content: 'Subitem-1-2'
         }        
       ]
     },
     {
-      title: 'Item-2',
+      content: 'Item-2',
       children: [
         {
-          title: 'Subitem-2-1'
+          content: 'Subitem-2-1'
         },
         {
-          title: 'Subitem-2-2'
+          content: 'Subitem-2-2'
         }         
       ]
     }
   ];
-  const conf = defConf(children);
+  const conf = defConf('my-tree', children);
+
+  const root = document.getElementById('root');
+  ReactDOM.render((<Tree conf={ conf } />), root);
+  ```
+  
+## Tree configuration
+  
+  ### Global methods
+  `mini-tree-react` has global methods:
+  
+  `defConf(id: string, children: array): object` -
+    
+  `findTree(id: string): object` - 
+  
+  ### Tree methods
+  Tree has methods:
+  
+  `findChild(selector: string): object` - 
+  
+  `hasChildren(): boolean` - 
+  
+  `getChildren(): array` - 
+
+## Child configuration
+  Tree's child configuration must contains `id` and `content` fields. 
+  `id` field contains child's identifier, it's can be use for child searching.
+  `content` field contains data for rendering. These fields can be `string` or `function` type.
+   Via `string` type you can to describe field name into data of child.
+   Via `function` type you can to return any data. 
+   By default uses `string` type, where `id` value is **id** and `content` value is **content**. 
+   
+   Example with `string` type:
+  ```javascript
+  import React from 'react';
+  import ReactDOM from 'react-dom';
+  import { Tree, defConf } from 'mini-tree-react';
+  
+  const children = [
+    {
+      id: 'my-item',
+      content: 'My item',
+    }
+  ];
+  const conf = defConf('my-tree', children);
+  conf.child = {
+    id: 'id',
+    content: 'content'
+  };
 
   const root = document.getElementById('root');
   ReactDOM.render((<Tree conf={ conf } />), root);
   ```
 
-## Main concepts
-
-  ### Item content
-  Every item contains `icon`, ` title` and `behavior`. `behavior` devides into two variants: `behaviorExpanded` and `behaviorCollapsed`. By default uses only `title` with value - 'title'. You can define self values ​​for item content resolving. Value can be of types `string` or `function`. Example:
+  Example with `function` type:
   ```javascript
-  import { Tree, defConf } from 'mini-tree-react';  
+  import React from 'react';
+  import ReactDOM from 'react-dom';
+  import { Tree, defConf } from 'mini-tree-react';
+  
   const children = [
     {
-      icon: (<i className='my-icon-class'></i>),
-      title: 'First item',
-      expandedIcon: (<i className='my-icon-class'></i>),
-      collapsedIcon: (<i className='my-icon-class'></i>)
+      id: 'my-item',
+      content: 'My item',
     }
   ];
-  const conf = defConf(children);
+  const conf = defConf('my-tree', children);
+  conf.child = {
+    id: (data) => data.item.id,
+    content: (data) => (<span>{ data.item.content }</span>)
+  };
 
-  // `string` type example
+  const root = document.getElementById('root');
+  ReactDOM.render((<Tree conf={ conf } />), root);
+  ```  
+  
+  ### Listeners
+  The children of the tree have events that you can to listen:
+  
+  `onClick` - for listen to the click event;
+  
+  `onDoubleClick` - for listen to the double click event;
+  
+  `onSelect` - for listen to the selection event;
+  
+  `onUnselect` - for listen to the unselection event;
+  
+  `onExpand` - for listen to expansion event;
+  
+  `onCollapse` - for listen to the collapse event;
+  
+  These fields can be `string` or `function` type. 
+  Via `string` type you can to describe the function name into data of the child.
+  Via `function` type you can describe the function being called.
+  
+  Example with `string` type:
+  ```javascript
+  import React from 'react';
+  import ReactDOM from 'react-dom';
+  import { Tree, defConf } from 'mini-tree-react';
+
+  const children = [
+    {
+      id: 'my-item',
+      content: 'My item',
+      click: (event, data) => { /* Some processing */ },
+      doubleClick: (event, data) => { /* Some processing */ },
+      select: (event, data) => { /* Some processing */ },
+      unselect: (event, data) => { /* Some processing */ },
+      expand: (event, data) => { /* Some processing */ },
+      collapse: (event, data) => { /* Some processing */ }
+    }
+  ];
+  const conf = defConf('my-tree', children);
   conf.child = {
-    icon: 'icon',
-    title: 'title',
-    behaviorExpanded: 'expandedIcon',
-    behaviorCollapsed: 'collapsedIcon'
+    id: 'id',
+    content: 'content',
+    onClick: 'click',
+    onDoubleClick: 'doubleClick',
+    onSelect: 'select',
+    onUnselect: 'unselect',
+    onExpand: 'expand',
+    onCollapse: 'collapse'
   };
-  // `function` type example
+
+  const root = document.getElementById('root');
+  ReactDOM.render((<Tree conf={ conf } />), root);
+  ```
+
+  Example with `function` type:
+  ```javascript
+  import React from 'react';
+  import ReactDOM from 'react-dom';
+  import { Tree, defConf } from 'mini-tree-react';
+
+  const children = [
+    {
+      id: 'my-item',
+      content: 'My item',
+    }
+  ];
+  const conf = defConf('my-tree', children);
   conf.child = {
-    icon: (item, index, conf) => { /* your code */ },
-    title: (item, index, conf) => { /* your code */ },
-    behaviorExpanded: (item, index, conf) => { /* your code */ },
-    behaviorCollapsed: (item, index, conf) => { /* your code */ }
+    id: 'id',
+    content: 'content',
+    onClick: (event, data) => { /* Some processing */ },
+    onDoubleClick: (event, data) => { /* Some processing */ },
+    onSelect: (event, data) => { /* Some processing */ },
+    onUnselect: (event, data) => { /* Some processing */ },
+    onExpand: (event, data) => { /* Some processing */ },
+    onCollapse: (event, data) => { /* Some processing */ }
   };
-  ``` 
+
+  const root = document.getElementById('root');
+  ReactDOM.render((<Tree conf={ conf } />), root);
+  ```  
+  
+  ### Children methods
+  Children has methods:
+  
+  `toggleSelected(): void` - for select/unselect children;
+  
+  `toggleExpanded(): void` - for expand/collapse children;
+  
+  `hasChildren(): boolean` - for children existence checking;
+  
+  `getChildren(): array` - for to get children;
+  
+  `isSelected(): boolean` - for current selection value checking;
+  
+  `isExpanded(): boolean` - for current expansion value checking;
+  
+  `getData(): object` - for to get child's data;
+  
+  `getParent(): object` - for to get parent;
+   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
   ### Expanding / Collapsing
   Tree items can be expanded and collapsed. At the same time, one tree item or all items can be expanded. This is determined by parameter `expand`. `mini-tree-react` provides two values for this parameter: `single` and `multi`. By default using `single` value. Also you can create self variant. Example:

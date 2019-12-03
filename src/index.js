@@ -11,6 +11,3 @@ export {
   SelectModels,
   ResolveModels
 };
-// TODO. Add more documentation
-// TODO. Add placeholder for tree
-// TODO. Selection model tests
