@@ -16,8 +16,6 @@ Simple tree view realization for react.js
   * [Listeners](#listeners)
   * [Children methods](#children-methods)
 * [Styling](#styling)
-  * [Available classes](#available-classes)
-  * [Base styles](#base-styles)
 
 ## Getting started
 
@@ -342,44 +340,73 @@ Simple tree view realization for react.js
   Children has methods:
   
   `toggleSelected(): void` - for select/unselect children;
+  ```javascript
+  const tree = findTree('my-tree');
+  tree.findChild('my-item').toggleSelected();
+  ```
   
   `toggleExpanded(): void` - for expand/collapse children;
+  ```javascript
+  const tree = findTree('my-tree');
+  tree.findChild('my-item').toggleExpanded();    
+  ```
   
   `hasChildren(): boolean` - for children existence checking;
+  ```javascript
+  const child = findTree('my-tree').findChild('my-item');
+  if (child.hasChildren()) {
+    /* some processing */
+  }
+  ```  
   
   `getChildren(): array` - for to get children;
+  ```javascript
+  const child = findTree('my-tree').findChild('my-item');
+  // All children selecting
+  child.getChildren()
+       .forEach((child) => child.toggleSelected());
+  ```
   
   `isSelected(): boolean` - for current selection value checking;
+  ```javascript
+   const child = findTree('my-tree').findChild('my-item');
+   // To get all selected children
+   const selectedChildren = child.getChildren()
+                                 .map((child) => child.isSelected()); 
+  ```
   
   `isExpanded(): boolean` - for current expansion value checking;
+  ```javascript
+   const child = findTree('my-tree').findChild('my-item');
+   // To get all expanded children
+   const selectedChildren = child.getChildren()
+                                 .map((child) => child.isExpanded()); 
+  ```  
   
   `getData(): object` - for to get child's data;
+  ```javascript
+   const child = findTree('my-tree').findChild('my-item');
+   // To get data of child
+   const data = child.getData(); 
+  ```   
   
   `getParent(): object` - for to get parent;
+  ```javascript
+   // Expand all
+   let child = findTree('my-tree').findChild('my-item');
+   do {
+     child.toggleExpanded();
+     child = child.getParent();
+   } while (child);
+    
+  ```    
 
   ## Styling
-
-  ### Available classes
-  You can style using CSS. CSS classes list:
-  ```css
-  /* Tree class */
-  .mini-tree { /* your code */ }
-  /* Items list class  */
-  .mini-tree-items { /* your code */ } 
-  /* Item class */                     
-  .mini-tree-item { /* your code */ }
-  /* Item icon container class */
-  .mini-tree-item-icon { /* your code */ }
-  /* Item behavior container class */
-  .mini-tree-item-behavior { /* your code */ }
-  /* Item behavior icon container class */
-  .mini-tree-item-behavior-icon { /* your code */ }
-  /* Item class, when item was expanded */
-  .mini-tree-item.expanded
-  ```
-
-  ### Base styles
-  Below you can see base description of `mini-tree-react` styles. Use this description to simplify styling. Also you can find this description in file: `mini-tree-react.css`, it is can be load via `css-loader` and `style-loader`, more information on `https://webpack.js.org/loaders/css-loader/`.
+  Below you can see base description of `mini-tree-react` styles. 
+  Use this description to simplify styling. 
+  Also you can find this description in file: `mini-tree-react.css`, 
+  it is can be load via `css-loader` and `style-loader`, 
+  more information on [css-loader](https://webpack.js.org/loaders/css-loader/).
   ```css
   .mini-tree {
     padding: 0;
@@ -390,33 +417,20 @@ Simple tree view realization for react.js
   .mini-tree-item-behavior {
     display: block;
     line-height: 14px;
-    padding: 15px 0px 15px 25px;
+    padding: 15px 0 15px 25px;
     cursor: default;
+    white-space: nowrap;
   }
   .mini-tree-item-behavior:hover {
     color: rgb(99, 122, 156);
     cursor: pointer;
   }
-  .mini-tree-item-behavior:hover .mini-tree-item-icon {
-    color: rgb(99, 122, 156);
-    cursor: pointer;
+  .mini-tree-item-behavior.selected {
+    color: rgb(64, 116, 191);
   }
-  .mini-tree-item-behavior:hover .mini-tree-item-behavior-icon {
-    color: rgb(99, 122, 156);
-    cursor: pointer;
-  }                    
   .mini-tree-item {    
     overflow: hidden;
     position: relative;
-  }
-  .mini-tree-item-icon {
-    margin-right: 5px;              
-  }
-  .mini-tree-item-behavior-icon {
-    margin-left: 5px;
-  }
-  .mini-tree-item.expanded .mini-tree-items {
-    display: none;
   }
   .mini-tree-item:before {    
     top: 22px;
@@ -426,10 +440,15 @@ Simple tree view realization for react.js
     display: inline-block;
     border: 0.5px solid #ccc;
   }
+  .mini-tree-item-content {}
   .mini-tree-items {
     padding: 0;
     list-style: none;
     margin-left: 25px;
     border-left: 0.5px solid #ccc;
+    display: none;
+  }
+  .mini-tree-items.expanded {
+    display: inherit;
   }  
   ```
