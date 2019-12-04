@@ -1,7 +1,7 @@
 /**
  *  No expanding
  *  @param conf tree configuration
- *  @return function without change selection
+ *  @return function without change expanding
  *  @author Andrey Yurzanov
  */
 export const none = (conf) => (event, data, expand) => expand.apply(data, [ data.isExpanded ]);

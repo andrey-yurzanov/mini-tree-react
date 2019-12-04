@@ -7,14 +7,14 @@ Simple tree view realization for react.js
   * [Install](#install)
   * [Base example](#base-example)
 * [Tree configuration](#tree-configuration)
+  * [Expand / Collapse](#expand-collapse)
+  * [Selection / Unselection](#selection-unselection)
+  * [Resolve children](#resolve-children)
+  * [Global methods](#global-methods)
   * [Tree methods](#tree-methods)
 * [Child configuration](#child-configuration)
   * [Listeners](#listeners)
   * [Children methods](#children-methods)
-  * [Expanding / Collapsing](#expand-collapse)
-  * [Resolve children](#children-resolve)
-  * [Listeners](#listeners)
-  * [Full description of configuration](#full-config)
 * [Styling](#styling)
   * [Available classes](#available-classes)
   * [Base styles](#base-styles)
@@ -62,22 +62,148 @@ Simple tree view realization for react.js
   ```
   
 ## Tree configuration
+
+  ### Expand / Collapse
+  You can expand and collapse child tree items by double-clicking. 
+  `ExpandModels` contains several commonly used models:
+  
+  `ExpandModels.none` - without expand and collapse;
+  
+  `ExpandModels.single` - only one child can be expand;
+  
+  `ExpandModels.multi` - all children can be expand at the same time;
+  
+  Also you can define your own model of expand:
+  ```javascript
+  const myExpandModel = (conf) => (event, data, expand) => {
+    expand.apply(data, [ /* true - expanded, false - collapsed */ ])
+  };
+  const conf = {
+    expand: myExpandModel
+  }; 
+  ```
+ 
+  ### Selection / Unselection
+  You can select and unselect child tree items by mouse click.
+  `SelectModels` contains several commonly used models:
+  
+  `SelectModels.none` - without selection and unselection;
+  
+  `SelectModels.single` - only one child can be select;
+  
+  `SelectModels.multi` - all children can be select at the same time;  
+  
+  Also you can define your own selection model:
+  ```javascript
+  const mySelectModel = (conf) => (event, data, select) => {
+    select.apply(data, [ /* true - selected, false - unselected */ ])
+  };
+  const conf = {
+    select: mySelectModel
+  }; 
+  ```  
+  
+  ### Resolve children
+  To get tree's children you must use resolve model.
+  `ResolveModels` contains several commonly used models:
+  
+  `ResolveModels.field` - Resolve children by field in tree's configuration;
+  ```javascript
+  const conf = {
+    resolve: ResolveModels.field(),
+    children: [ /* some children */ ],
+    child: {
+      children: 'children' // You can specify a field name for `ResolveModels.field`
+    }
+  };
+  ```
+  
+  `ResolveModels.param` - Resolve children by parameter. This model uses by default in `defConf` function;
+  ```javascript
+  const conf = {
+    resolve: ResolveModels.param([ /* Some children */ ]),
+  };
+  ```
+
+  Also you can define your own model of resolve:
+  ```javascript
+  const myResolveModel = (parent, childConf, resolve) => {
+    const children = [/* some children */];
+    resolve.apply(childConf, [ children ]);
+  };
+  const conf = {
+    resolve: myResolveModel
+  };
+  ```
   
   ### Global methods
   `mini-tree-react` has global methods:
   
-  `defConf(id: string, children: array): object` -
+  `defConf(id: string, children: array): object` - default configuration creating;
+  
+  Standard configuration looks like this:
+  ```javascript
+  const manualConf = {
+    id: 'my-tree',
+    expand: ExpandModels.multi,
+    select: SelectModels.multi,
+    resolve: param([ /* some children */ ]),
+    child: {
+      id: 'id',
+      content: 'content'
+    }
+  };
+  ```
+  If you uses `defConf` function then, the above code can be replaced by this code:
+  ```javascript
+  const conf = defConf('my-tree', [ /* some children */ ]);
+  ```  
     
-  `findTree(id: string): object` - 
+  `findTree(id: string): object` - tree searching by identifier;
+  
+  After the tree is found, you can use the tree methods. See methods in the section [Tree methods](#tree-methods)
+  ```javascript
+  const tree = findTree('my-tree');
+  ```  
   
   ### Tree methods
   Tree has methods:
   
-  `findChild(selector: string): object` - 
+  `findChild(selector: string): object` - for child searching by id or `treeIndex`.
+  `treeIndex` is specified by the rule: the parent `treeIndex` plus the index of the item in the array.
+  Below you can to see `treeIndex` example:
+  ```
+  item - 0
+    item - 00
+  item - 1
+    item - 10
+      item - 100
+  ```
+  Although `treeIndex` seems like a good option, it's better to use identifiers to search.
+  After the tree's child is found, you can use the children methods. 
+  See methods in the section [Children methods](#children-methods)
+  ```javascript
+  const tree = findTree('my-tree');
+  // Searching by id
+  let child = tree.findChild('my-item-id');
+  // Searching by treeIndex
+  child = tree.findChild('010');
+  ```
   
-  `hasChildren(): boolean` - 
+  `hasChildren(): boolean` - for children existence checking;
+  ```javascript
+  const tree = findTree('my-tree');
+  if (tree.hasChildren()) {
+    /* some processing */
+  }
+  ```
   
-  `getChildren(): array` - 
+  `getChildren(): array` - for to get children;
+  ```javascript
+   const tree = findTree('my-tree');
+   const selectedChildren = tree.getChildren()
+                                .map((child) => child.isSelected());
+  ```
 
 ## Child configuration
   Tree's child configuration must contains `id` and `content` fields. 
@@ -230,119 +356,6 @@ Simple tree view realization for react.js
   `getData(): object` - for to get child's data;
   
   `getParent(): object` - for to get parent;
-   
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-
-  ### Expanding / Collapsing
-  Tree items can be expanded and collapsed. At the same time, one tree item or all items can be expanded. This is determined by parameter `expand`. `mini-tree-react` provides two values for this parameter: `single` and `multi`. By default using `single` value. Also you can create self variant. Example:
-  ```javascript
-  import { Tree, defConf, single, multi } from 'mini-tree-react';
-  // ...
-  // `single` example
-  const conf = defConf(children);
-  conf.expand = single;
-  // ...
-  // `multi` example
-  const conf = defConf(children);
-  conf.expand = multi;
-  // ... 
-  // Self realization example
-  const conf = defConf(children);
-  conf.expand = (item, expand) => { /* your code */ }; 
-  // ... 
-  ```
-
-  ### Resolve children
-  `mini-tree-react` provides two ways for resolve children(tree data): `param` - it is for resolve by `defConf` function parameter and `field` - it is for resolve by configuration field. Also you can create self variant. Example:
-  ```javascript
-  import { Tree, defConf, param, field } from 'mini-tree-react';
-  // ...
-  // `param` example
-  const conf = defConf(children);
-  conf.resolve = param([ /* content */ ]);
-  // ...
-  // `field` example
-  const conf = defConf(children);
-  conf.resolve = field();
-  conf.children = [ /* content */ ];
-  // ... 
-  // Self realization example
-  const conf = defConf(children);
-  conf.resolve = (parent, childConf) => { /* your code */ };  
-  // ...
-  ```
-
-  ### Listeners
-  `mini-tree-react` provides three types listeners: `expand` - it is for to listen item expanding, `collapse` - it is for to listen item collapsing and `click` - it is for to listen click by item. Listener configuration can be of types `string` or `function`. Example:
-  ```javascript
-  import { Tree, defConf } from 'mini-tree-react';  
-  const children = [
-    {
-      icon: (<i className='my-icon-class'></i>),
-      title: 'First item',
-      expandedIcon: (<i className='my-icon-class'></i>),
-      collapsedIcon: (<i className='my-icon-class'></i>),
-
-      // For `string` type example
-      expandHandle: (name, event) => { /* your code */ },
-      collapseHandle: (name, event) => { /* your code */ },
-      clickHandle: (name, event) => { /* your code */ }
-    }
-  ];
-  const conf = defConf(children);
-
-  // `string` type example
-  conf.child.listen = {
-    expand: 'expandHandle',
-    collapse: 'collapseHandle',
-    click: 'clickHandle'
-  };
-  // `function` type example
-  conf.child.listen = {
-    expand: (name, event) => { /* your code */ },
-    collapse: (name, event) => { /* your code */ },
-    click: (name, event) => { /* your code */ }
-  };
-  // ...
-  ``` 
-
-  ### Full description of configuration
-  Below you can see full configuration description for `mini-tree-react`. `?` - not require.
-  ```javascript
-  const conf = {
-    expand: [single | multi | (item, expand) => {}],
-    resolve: [param | field | (parent, childConf) => {}],
-    child: {
-      icon?: [string | function],
-      title: [string | function],
-      behaviorExpanded?: [string | function],
-      behaviorCollapsed?: [string | function]      
-    },
-    children?: [ ... ]
-  };
-  ```
 
   ## Styling
 

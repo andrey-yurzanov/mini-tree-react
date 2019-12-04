@@ -160,7 +160,7 @@ export const defConf = (id, children) => {
   return {
     id: id,
     expand: ExpandModels.multi,
-    select: SelectModels.none,
+    select: SelectModels.multi,
     resolve: param(children),
     child: {
       id: 'id',
