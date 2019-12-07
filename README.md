@@ -21,10 +21,10 @@ Simple tree view realization for ReactJS
 
 ## Getting started
 
-  ## Install
+### Install
   For start using `mini-tree-react` you need to install `mini-tree-react` package. Enter the command: `npm i mini-tree-react --save-dev`.
 
-  ## Base example
+### Base example
 
   ```javascript
   import React from 'react';
@@ -63,7 +63,7 @@ Simple tree view realization for ReactJS
   
 ## Tree configuration
 
-  ## Expand / Collapse
+### Expand / Collapse
   You can expand and collapse child tree items by double-clicking. 
   `ExpandModels` contains several commonly used models:
   
@@ -83,7 +83,7 @@ Simple tree view realization for ReactJS
   }; 
   ```
  
-  ## Selection / Unselection
+### Selection / Unselection
   You can select and unselect child tree items by mouse click.
   `SelectModels` contains several commonly used models:
   
@@ -103,7 +103,7 @@ Simple tree view realization for ReactJS
   }; 
   ```  
   
-  ## Resolve children
+### Resolve children
   To get tree's children you must use resolve model.
   `ResolveModels` contains several commonly used models:
   
@@ -136,7 +136,7 @@ Simple tree view realization for ReactJS
   };
   ```
   
-  ## Global methods
+### Global methods
   `mini-tree-react` has global methods:
   
   `defConf(id: string, children: array): object` - default configuration creating;
@@ -166,7 +166,7 @@ Simple tree view realization for ReactJS
   const tree = findTree('my-tree');
   ```  
   
-  ## Tree methods
+### Tree methods
   Tree has methods:
   
   `findChild(selector: string): object` - for child searching by id or `treeIndex`.
@@ -257,7 +257,7 @@ Simple tree view realization for ReactJS
   ReactDOM.render((<Tree conf={ conf } />), root);
   ```  
   
-  ## Listeners
+### Listeners
   The children of the tree have events that you can to listen:
   
   `onClick` - for listen to the click event;
@@ -338,7 +338,7 @@ Simple tree view realization for ReactJS
   ReactDOM.render((<Tree conf={ conf } />), root);
   ```  
   
-  ## Children methods
+### Children methods
   Children has methods:
   
   `toggleSelected(): void` - for select/unselect children;
