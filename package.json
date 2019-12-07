@@ -1,7 +1,7 @@
 {
-  "name": "mini-tree-react",
+  "name": "@andrey-yurzanov/mini-tree-react",
   "version": "1.0.3",
-  "description": "Simple tree view realization for react.js",
+  "description": "Simple tree view realization for ReactJS",
   "main": "./lib/index.js",
   "scripts": {
     "build": "webpack",
@@ -11,10 +11,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andrey-yurzanov/mini-tree-react.git"
-  },  
+    "url": "git+https://github.com/andrey-yurzanov/mini-tree-react.git"
+  },
   "homepage": "https://github.com/andrey-yurzanov/mini-tree-react",
-  "bugs": "https://github.com/andrey-yurzanov/mini-tree-react/issues",
+  "bugs": {
+    "url": "https://github.com/andrey-yurzanov/mini-tree-react/issues"
+  },
   "peerDependencies": {
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
@@ -46,6 +48,11 @@
     "react",
     "tree",
     "tree-view",
-    "tree-component"    
-  ]
+    "tree-component"
+  ],
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "dependencies": {}
 }
