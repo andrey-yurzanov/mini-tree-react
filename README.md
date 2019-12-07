@@ -2,8 +2,8 @@
 
 Simple tree view realization for ReactJS
 
-![npm](https://img.shields.io/npm/v/@andrey-yurzanov/mini-tree-react)
-![npm bundle size](https://img.shields.io/bundlephobia/min/@andrey-yurzanov/mini-tree-react)
+![npm](https://img.shields.io/npm/v/mini-tree-react)
+![npm bundle size](https://img.shields.io/bundlephobia/min/mini-tree-react)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![GitHub last commit](https://img.shields.io/github/last-commit/andrey-yurzanov/mini-tree-react)
 
@@ -12,8 +12,8 @@ Simple tree view realization for ReactJS
   * [Install](#install)
   * [Base example](#base-example)
 * [Tree configuration](#tree-configuration)
-  * [Expand / Collapse](#expand-collapse)
-  * [Selection / Unselection](#selection-unselection)
+  * [Expand and Collapse](#expand-and-collapse)
+  * [Selection and Unselection](#selection-and-unselection)
   * [Resolve children](#resolve-children)
   * [Global methods](#global-methods)
   * [Tree methods](#tree-methods)
