@@ -66,7 +66,7 @@ Simple tree view realization for ReactJS
   
 ## Tree configuration
 
-### Expand / Collapse
+### Expand and Collapse
   You can expand and collapse child tree items by double-clicking. 
   `ExpandModels` contains several commonly used models:
   
@@ -86,7 +86,7 @@ Simple tree view realization for ReactJS
   }; 
   ```
  
-### Selection / Unselection
+### Selection and Unselection
   You can select and unselect child tree items by mouse click.
   `SelectModels` contains several commonly used models:
   
