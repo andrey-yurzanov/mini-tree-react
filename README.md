@@ -2,7 +2,10 @@
 
 Simple tree view realization for ReactJS
 
+![npm](https://img.shields.io/npm/v/@andrey-yurzanov/mini-tree-react)
+![npm bundle size](https://img.shields.io/bundlephobia/min/@andrey-yurzanov/mini-tree-react)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![GitHub last commit](https://img.shields.io/github/last-commit/andrey-yurzanov/mini-tree-react)
 
 ## Table of contents
 * [Getting started](#getting-started)
