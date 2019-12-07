@@ -33,14 +33,14 @@ module.exports = [
       rules: globalRules
     },
     mode: 'production'
-  },  
+  },
   {
     entry: path.resolve(__dirname, './src/index.js'),
     output: {
       path: path.resolve(__dirname, './lib'),
       filename: 'index.js',
       library: 'node-package-open-source-starter',
-      libraryTarget: 'umd',      
+      libraryTarget: 'umd',
     },
     module: {
       rules: globalRules
