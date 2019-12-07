@@ -1,5 +1,5 @@
 {
-  "name": "@andrey-yurzanov/mini-tree-react",
+  "name": "mini-tree-react",
   "version": "1.0.9",
   "description": "Simple tree view realization for ReactJS",
   "main": "./lib/index.js",
