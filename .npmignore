@@ -1,3 +1,6 @@
 webpack.config.js
 .babelrc
 test/*
+.idea/*
+src/*
+dist/*
