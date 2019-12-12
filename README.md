@@ -406,58 +406,58 @@ Simple tree view realization for ReactJS
     
   ```    
 
-  ## Styling
+## Styling
   Below you can see base description of `mini-tree-react` styles. 
   Use this description to simplify styling. 
   Also you can find this description in file: `mini-tree-react.css`, 
   it is can be load via `css-loader` and `style-loader`, 
   more information on [css-loader](https://webpack.js.org/loaders/css-loader/).
   ```css
-.mini-tree {
-  padding: 0;
-  list-style: none;
-  margin-left: 25px;
-  border-left: 0.5px solid #ccc;
-  overflow: unset !important;
-}
-.mini-tree-item-behavior {
-  display: block;
-  line-height: 14px;
-  padding: 15px 0 15px 25px;
-  cursor: default;
-  white-space: nowrap;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-.mini-tree-item-behavior:hover {
-  color: rgb(99, 122, 156);
-  cursor: pointer;
-}
-.mini-tree-item-behavior.selected {
-  color: rgb(64, 116, 191);
-}
-.mini-tree-item {    
-  overflow: hidden;
-  position: relative;
-}
-.mini-tree-item:before {    
-  top: 22px;
-  width: 15px;
-  content: ' ';
-  position: absolute;
-  display: inline-block;
-  border: 0.5px solid #ccc;
-}
-.mini-tree-item-content {}
-.mini-tree-items {
-  padding: 0;
-  list-style: none;
-  margin-left: 25px;
-  border-left: 0.5px solid #ccc;
-  display: none;
-}
-.mini-tree-items.expanded {
-  display: inherit;
-}  
+  .mini-tree {
+    padding: 0;
+    list-style: none;
+    margin-left: 25px;
+    border-left: 0.5px solid #ccc;
+    overflow: unset !important;
+  }
+  .mini-tree-item-behavior {
+    display: block;
+    line-height: 14px;
+    padding: 15px 0 15px 25px;
+    cursor: default;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  .mini-tree-item-behavior:hover {
+    color: rgb(99, 122, 156);
+    cursor: pointer;
+  }
+  .mini-tree-item-behavior.selected {
+    color: rgb(64, 116, 191);
+  }
+  .mini-tree-item {    
+    overflow: hidden;
+    position: relative;
+  }
+  .mini-tree-item:before {    
+    top: 22px;
+    width: 15px;
+    content: ' ';
+    position: absolute;
+    display: inline-block;
+    border: 0.5px solid #ccc;
+  }
+  .mini-tree-item-content {}
+  .mini-tree-items {
+    padding: 0;
+    list-style: none;
+    margin-left: 25px;
+    border-left: 0.5px solid #ccc;
+    display: none;
+  }
+  .mini-tree-items.expanded {
+    display: inherit;
+  }  
   ```
