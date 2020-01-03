@@ -32,3 +32,12 @@ export const toggleSelected = (state, selected) => {
 export const toggleExpanded = (state, expanded) => {
   return { ...state, expanded: expanded };
 };
+
+/**
+ *  Standard state filters
+ *  @author Andrey Yurzanov
+ */
+export const StateFilters = {
+  toggleSelected: toggleSelected,
+  toggleExpanded: toggleExpanded
+};

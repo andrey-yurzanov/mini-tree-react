@@ -15,6 +15,7 @@ Simple tree view realization for ReactJS
   * [Expand and Collapse](#expand-and-collapse)
   * [Selection and Unselection](#selection-and-unselection)
   * [Resolve children](#resolve-children)
+  * [State filter](#state-filter)
   * [Global methods](#global-methods)
   * [Tree methods](#tree-methods)
 * [Child configuration](#child-configuration)
@@ -138,6 +139,80 @@ Simple tree view realization for ReactJS
     resolve: myResolveModel
   };
   ```
+
+### State filter
+  You can filter the state data before component will render.
+  This can be useful when you want tree elements to be expanded or selected at the initialization stage and etc.
+  Below you can see base example.
+  ```javascript
+   const conf = defConf('my-tree', [ /* some children */ ]);
+   conf.state = (type, data, state) => {
+     return state;
+   };  
+
+   const root = document.getElementById('root');
+   ReactDOM.render((<Tree conf={ conf } />), root);
+  ```
+  `type` parameter is a reason of update state, it's define in `UpdateStateType`. 
+  Below you can see all options for the type value.
+  
+  `UpdateStateType.TREE_INIT` - Tree component initialization;
+  
+  `UpdateStateType.ITEM_INIT` - Tree item component initialization;
+  
+  `UpdateStateType.TREE_RESOLVED` - Children of the tree resolved;
+  
+  `UpdateStateType.ITEM_RESOLVED` - Children of the tree item resolved;
+  
+  `UpdateStateType.ITEM_EXPANDED` - Tree item expanded;
+  
+  `UpdateStateType.ITEM_SELECTED` - Tree item selected;
+  
+  `data` parameter is data for component rendering. 
+  For tree component `data` is the configuration data, for item component `data` is the item value.
+  
+  `state` parameter is state after some action, but before filtering. For tree component `state` has structure:
+  ```javascript
+  {
+    children: array
+  }
+  ```
+  For tree item component `state` has structure:
+  ```
+  {
+    selected: true | false,
+    expanded: true | false,
+    children: array
+  }
+  ```
+  `mini-tree-react` has some of the most commonly used state filters in `StateFilters`. 
+  Below you can see these filters.
+  
+  `toggleSelected(state: object, selected: boolean)`  - state filter for selection value changing;
+  ```javascript
+   const conf = defConf('my-tree', [ /* some children */ ]);
+   conf.state = (type, data, state) => {
+     if (type === UpdateStateType.ITEM_INIT) {
+       return StateFilters.toggleSelected(state, true); // all items are selected
+     }
+   };  
+
+   const root = document.getElementById('root');
+   ReactDOM.render((<Tree conf={ conf } />), root);
+  ```
+  
+  `toggleExpanded(state: object, expanded: boolean)` - state filter for expand value changing;
+  ```javascript
+   const conf = defConf('my-tree', [ /* some children */ ]);
+   conf.state = (type, data, state) => {
+     if (type === UpdateStateType.ITEM_INIT) {
+       return StateFilters.toggleExpanded(state, true); // all items are expanded
+     }
+   };  
+
+   const root = document.getElementById('root');
+   ReactDOM.render((<Tree conf={ conf } />), root);
+  ```  
   
 ### Global methods
   `mini-tree-react` has global methods:
