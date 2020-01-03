@@ -1,4 +1,5 @@
 import React from 'react';
+import { UpdateStateType } from "./state";
 
 // For data building
 const data = (props, state) => {
@@ -25,23 +26,21 @@ const get = (data, name) => {
 };
 
 /**
- *  Tree element realization
+ *  Tree element realization.
  *  @author Andrey Yurzanov 
  */
 export default class TreeItem extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      selected: false,
-      expanded: false,
-      children: null
-    };
 
+    this.stateFilter = this.stateFilter.bind(this);
     this.hasChildren = this.hasChildren.bind(this);
     this.getChildren = this.getChildren.bind(this);
     this.updateChildren = this.updateChildren.bind(this);
+    this.updateSelected = this.updateSelected.bind(this);
     this.toggleSelected = this.toggleSelected.bind(this);
     this.updateSelectedByClick = this.updateSelectedByClick.bind(this);
+    this.updateExpanded = this.updateExpanded.bind(this);
     this.toggleExpanded = this.toggleExpanded.bind(this);
     this.updateExpandedByDblClick = this.updateExpandedByDblClick.bind(this);
     this.mountMethodsStore = this.mountMethodsStore.bind(this);
@@ -50,6 +49,12 @@ export default class TreeItem extends React.Component {
     this.isExpanded = this.isExpanded.bind(this);
     this.getData = this.getData.bind(this);
     this.getParent = this.getParent.bind(this);
+
+    this.state = this.stateFilter(UpdateStateType.ITEM_INIT, {
+      selected: false,
+      expanded: false,
+      children: null
+    });
   }
 
   componentDidMount() {
@@ -102,30 +107,50 @@ export default class TreeItem extends React.Component {
   }
 
   /**
+   *  For state filtering.
+   *  @param type reason of state update
+   *  @param state state for filtering
+   *  @return state after filtering
+   */
+  stateFilter(type, state) {
+    const filter = this.props.treeConf.state;
+    const result = filter.apply(filter, [ type, this.props.item, state ]);
+    return result ? result : state;
+  }
+
+  /**
    *  For children updating.
    *  @param children new children
    */
   updateChildren(children) {
-    this.setState({
+    this.setState(this.stateFilter(UpdateStateType.ITEM_RESOLVED, {
       selected: this.state.selected,
       expanded: this.state.expanded,
       children: children
-    });
+    }));
   }
 
   /**
-   *  For selection value updating
+   *  For selection value updating.
+   *  @param selected selection value
+   */
+  updateSelected(selected) {
+    this.setState(this.stateFilter(UpdateStateType.ITEM_SELECTED, {
+      selected: selected,
+      expanded: this.state.expanded,
+      children: this.state.children
+    }));
+  }
+
+  /**
+   *  For selection value updating.
    */
   toggleSelected() {
     const conf = this.props.conf;
     const select = this.props.select;
     const callback = (selected) => {
       if (this.state.selected !== selected) {
-        this.setState({
-          selected: selected,
-          expanded: this.state.expanded,
-          children: this.state.children
-        });
+        this.updateSelected(selected);
         this.sendEvent(selected ? 'onSelect' : 'onUnselect', null);
       }
     };
@@ -133,7 +158,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  For selection value updating by click
+   *  For selection value updating by click.
    *  @param event click event
    */
   updateSelectedByClick(event) {
@@ -142,11 +167,7 @@ export default class TreeItem extends React.Component {
     const callback = (selected) => {
       this.sendEvent('onClick', event.nativeEvent);
       if (this.state.selected !== selected) {
-        this.setState({
-          selected: selected,
-          expanded: this.state.expanded,
-          children: this.state.children
-        });
+        this.updateSelected(selected);
         this.sendEvent(selected ? 'onSelect' : 'onUnselect', event.nativeEvent);
       }
     };
@@ -154,18 +175,26 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  For expand value updating
+   *  For expand value updating.
+   *  @param expanded expand value
+   */
+  updateExpanded(expanded) {
+    this.setState(this.stateFilter(UpdateStateType.ITEM_EXPANDED, {
+      selected: this.state.selected,
+      expanded: expanded,
+      children: this.state.children
+    }));
+  }
+
+  /**
+   *  For expand value updating.
    */
   toggleExpanded() {
     const conf = this.props.conf;
     const expand = this.props.expand;
     const callback = (expanded) => {
       if (this.state.expanded !== expanded) {
-        this.setState({
-          selected: this.state.selected,
-          expanded: expanded,
-          children: this.state.children
-        });
+        this.updateExpanded(expanded);
         this.sendEvent(expanded ? 'onExpand' : 'onCollapse', null);
       }
     };
@@ -173,7 +202,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  For expand value updating by double click
+   *  For expand value updating by double click.
    *  @param event double click event
    */
   updateExpandedByDblClick(event) {
@@ -182,11 +211,7 @@ export default class TreeItem extends React.Component {
     const callback = (expanded) => {
       this.sendEvent('onDoubleClick', event.nativeEvent);
       if (this.state.expanded !== expanded) {
-        this.setState({
-          selected: this.state.selected,
-          expanded: expanded,
-          children: this.state.children
-        });
+        this.updateExpanded(expanded);
         this.sendEvent(expanded ? 'onExpand' : 'onCollapse', event.nativeEvent);
       }
     };
@@ -194,7 +219,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  Selection checking
+   *  Selection checking.
    *  @return true if item is selected else false
    */
   isSelected() {
@@ -202,7 +227,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  Expand checking
+   *  Expand checking.
    *  @return true if item is expanded else false
    */
   isExpanded() {
@@ -210,7 +235,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  Checking existence of children
+   *  Checking existence of children.
    *  @return true if children exist, else false
    */
   hasChildren() {
@@ -218,7 +243,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  To get item's children
+   *  To get item's children.
    *  @return children or empty array
    */
   getChildren() {
@@ -231,7 +256,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  To get item's data
+   *  To get item's data.
    *  @return item's data
    */
   getData() {
@@ -239,7 +264,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  To get item's parent
+   *  To get item's parent.
    *  @return item's parent
    */
   getParent() {
@@ -250,7 +275,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  Mounting of methods
+   *  Mounting of methods.
    */
   mountMethodsStore() {
     const id = get(data(this.props, this.state), 'id');
@@ -272,7 +297,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  Unmounting of methods
+   *  Unmounting of methods.
    */
   unmountMethodsStore() {
     const id = get(data(this.props, this.state), 'id');
@@ -283,7 +308,7 @@ export default class TreeItem extends React.Component {
   }
 
   /**
-   *  For events sending
+   *  For events sending.
    *  @param name event name
    *  @param event native event
    */

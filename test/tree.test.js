@@ -2,6 +2,7 @@ import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { Tree, defConf, findTree, ResolveModels, ExpandModels, SelectModels } from '../src/index';
+import {UpdateStateType} from "../src/components/state";
 
 const createChildren = (count, depth) => {
   const children = [];
@@ -492,4 +493,39 @@ it('TreeItem.listen(onSelect/onUnselect)', () => {
     items[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
   });
   expect(unselectEvent).not.toBeNull();
+});
+
+it('Tree.state()', () => {
+  let treeInit = false;
+  let itemInit = false;
+  let treeResolve = false;
+  let itemResolve = false;
+  let itemSelected = false;
+  let itemExpanded = false;
+
+  act(() => {
+    const conf = defConf('tree-test', createChildren(2, 2));
+    conf.state = (type, data, state) => {
+      switch (type) {
+        case UpdateStateType.TREE_INIT: treeInit = true; break;
+        case UpdateStateType.ITEM_INIT: itemInit = true; break;
+        case UpdateStateType.TREE_RESOLVED: treeResolve = true; break;
+        case UpdateStateType.ITEM_RESOLVED: itemResolve = true; break;
+        case UpdateStateType.ITEM_SELECTED: itemSelected = true; break;
+        case UpdateStateType.ITEM_EXPANDED: itemExpanded = true; break;
+      }
+    };
+    render(<Tree conf={ conf } />, container);
+  });
+
+  const child = findTree('tree-test').findChild('item-2-0');
+  child.toggleExpanded();
+  child.toggleSelected();
+
+  expect(treeInit).toBe(true);
+  expect(itemInit).toBe(true);
+  expect(treeResolve).toBe(true);
+  expect(itemResolve).toBe(true);
+  expect(itemSelected).toBe(true);
+  expect(itemExpanded).toBe(true);
 });

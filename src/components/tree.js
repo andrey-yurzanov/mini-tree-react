@@ -3,6 +3,7 @@ import TreeItem from './tree-item';
 import { param } from './resolve';
 import { ExpandModels } from './expand';
 import { SelectModels } from './select';
+import { UpdateStateType } from "./state";
 
 // For children building
 const buildChildren = (treeConf, parent, children, conf, expand, select, resolve, methodsStore) => {
@@ -35,7 +36,6 @@ const treeMethodsStore = new Map();
 export class Tree extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { children: null };
     this.methodsStore = new Map();
 
     this.updateChildren = this.updateChildren.bind(this);
@@ -44,6 +44,9 @@ export class Tree extends React.Component {
     this.getChildren = this.getChildren.bind(this);
     this.mountMethodsStore = this.mountMethodsStore.bind(this);
     this.unmountMethodsStore = this.unmountMethodsStore.bind(this);
+    this.stateFilter = this.stateFilter.bind(this);
+
+    this.state = this.stateFilter(UpdateStateType.TREE_INIT, { children: null });
   }
 
   componentDidMount() {
@@ -81,11 +84,23 @@ export class Tree extends React.Component {
   }
 
   /**
+   *  For state filtering.
+   *  @param type reason of state update
+   *  @param state state for filtering
+   *  @return state after filtering
+   */
+  stateFilter(type, state) {
+    const filter = this.props.conf.state;
+    const result = filter.apply(filter, [ type, this.props.conf, state ]);
+    return result ? result : state;
+  }
+
+  /**
    *  For children updating.
    *  @param children new children
    */
   updateChildren(children) {
-    this.setState({ children: children });
+    this.setState(this.stateFilter(UpdateStateType.TREE_RESOLVED, { children: children }));
   }
 
   /**
@@ -162,6 +177,7 @@ export const defConf = (id, children) => {
     expand: ExpandModels.multi,
     select: SelectModels.multi,
     resolve: param(children),
+    state: (type, data, state) => state,
     child: {
       id: 'id',
       content: 'content'
