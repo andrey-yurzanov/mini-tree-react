@@ -226,6 +226,7 @@ Simple tree view realization for ReactJS
     expand: ExpandModels.multi,
     select: SelectModels.multi,
     resolve: param([ /* some children */ ]),
+    state: (type, data, state) => state,
     child: {
       id: 'id',
       content: 'content'
